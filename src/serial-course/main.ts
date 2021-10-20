@@ -8,7 +8,10 @@ import {
   DOMParser,
   Element,
 } from "https://deno.land/x/deno_dom@v0.1.15-alpha/deno-dom-wasm.ts";
-import { basename, join } from "https://deno.land/std@0.112.0/path/mod.ts";
+import {
+  join,
+  parse as parsePath,
+} from "https://deno.land/std@0.112.0/path/mod.ts";
 import { delay, exists, fetchFile, writeFile } from "../utilities.ts";
 
 const SOURCE_CSV = "ex.csv";
@@ -18,8 +21,8 @@ const DOWNLOAD_DELAY = 1000;
 
 const parsed = await loadLessons(SOURCE_CSV);
 const lessons = await processLessons(parsed);
-// await writeLessons(lessons);
-await downloadAudios(lessons);
+await writeLessons(lessons);
+// await downloadAudios(lessons);
 
 /**
  * Load raw lessons from CSV
@@ -75,7 +78,7 @@ async function processLessons(parsed) {
 /**
  * Parse a lesson from a HTML table
  * tbody
- *  tr -> ATTRIBUTE data-audio-slow, data-audio-fast
+ *  tr[] -> ATTRIBUTE data-audio-slow, data-audio-fast
  *    td -> TEXT id
  *    td label -> TEXT pinyin
  *    td label -> TEXT simplified
@@ -183,9 +186,13 @@ function getExercise(tds) {
 
 /**
  * Write processed lessons to CSV
+ * columns: `"ID", "Simplified", "Traditional", "Pinyin", "Translation", "Audio", "Audio slow"`
+ * don't use header since Anki can't skip it
  */
 async function writeLessons(lessons) {
   log.info(`Writing lessons to '${TARGET_CSV_DIR}'...`);
+
+  const promises = [];
 
   for (const { name, content } of lessons) {
     log.debug(`Writing lesson: ${name}...`);
@@ -200,15 +207,14 @@ async function writeLessons(lessons) {
         content: { id, pinyin, simplified, traditional, translation },
       } of content
     ) {
-      // todo: test if basename works with URLs
-      const audio = basename(fastAudioUrl);
-      const audioSlow = basename(slowAudioUrl);
+      const audio = getFastAudioFileName(fastAudioUrl);
+      const audioSlow = getSlowAudioFileName(slowAudioUrl);
 
       lessonPolished.push({
         id,
-        pinyin,
         simplified,
         traditional,
+        pinyin,
         translation,
         audio,
         audioSlow,
@@ -217,15 +223,17 @@ async function writeLessons(lessons) {
 
     const csvString = await stringifyCsv(lessonPolished, [
       "id",
-      "pinyin",
       "simplified",
       "traditional",
+      "pinyin",
       "translation",
       "audio",
       "audioSlow",
-    ]);
-    await Deno.writeTextFile(lessonPath, csvString);
+    ], { headers: false });
+    promises.push(Deno.writeTextFile(lessonPath, csvString));
   }
+
+  await Promise.all(promises);
 }
 
 /**
@@ -247,7 +255,10 @@ async function downloadAudios(lessons) {
     ) {
       const timeout = delay(DOWNLOAD_DELAY);
 
-      const fastAudioPath = join(TARGET_AUDIO_DIR, basename(fastAudioUrl));
+      const fastAudioPath = join(
+        TARGET_AUDIO_DIR,
+        getFastAudioFileName(fastAudioUrl),
+      );
 
       if (await exists(fastAudioPath)) {
         log.info(`Skip downloading audio for ${id} because already exists.`);
@@ -258,7 +269,10 @@ async function downloadAudios(lessons) {
       }
 
       if (slowAudioUrl != "") {
-        const slowAudioPath = join(TARGET_AUDIO_DIR, basename(slowAudioUrl));
+        const slowAudioPath = join(
+          TARGET_AUDIO_DIR,
+          getSlowAudioFileName(slowAudioUrl),
+        );
 
         if (await exists(slowAudioPath)) {
           log.info(
@@ -274,4 +288,33 @@ async function downloadAudios(lessons) {
       await timeout;
     }
   }
+}
+
+/**
+ * Get filename for fast audio from URL
+ * Add "IC " to beginning
+ */
+function getFastAudioFileName(url) {
+  const { base } = parsePath(url);
+  const newBase = "IC " + base;
+  log.debug(base, "->", newBase);
+  return newBase;
+}
+
+/**
+ * Get filename for slow audio from URL
+ * Add "IC " to beginning, move "Slow" to end
+ * Note, URL can be "" if not present!
+ */
+function getSlowAudioFileName(url) {
+  if (url == "") {
+    return url;
+  }
+  const { base, name, ext } = parsePath(url);
+  const regex = /^(.+) (Slow)(.+)$/;
+  const matches = name.match(regex);
+  const newName = "IC " + matches[1] + matches[3] + " " + matches[2];
+  const newBase = newName + ext;
+  log.debug(base, "->", newBase);
+  return newBase;
 }
