@@ -13,12 +13,11 @@ export async function exists(path) {
     const file = await Deno.open(path);
     Deno.close(file.rid);
     return true;
-  } catch (e) {
-    if (e.name == "NotFound") {
+  } catch (err) {
+    if (err instanceof Deno.errors.NotFound) {
       return false;
-    } else {
-      throw e
     }
+    throw err;
   }
 }
 
@@ -31,11 +30,11 @@ export async function fetchFile(url) {
     }
     try {
       return await res.blob();
-    } catch (e) {
-      log.error("Blob failed", e)
+    } catch (err) {
+      log.error("Blob failed", err)
     }
-  } catch (e) {
-    log.error("Network failed", e)
+  } catch (err) {
+    log.error("Network failed", err)
   }
 }
 
@@ -46,7 +45,7 @@ export async function writeFile(path, blob) {
   try {
     await Deno.writeFile(path, data)
     log.debug("Writing", path);
-  } catch (e) {
-    log.error("Writing failed", path, e);
+  } catch (err) {
+    log.error("Writing failed", path, err);
   }
 }
