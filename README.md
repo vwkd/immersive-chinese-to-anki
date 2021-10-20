@@ -1,56 +1,24 @@
 ## README
 
+Scrapes lessons from Immersive Chinese
+
+
+
+## Architecture
+
+Uses content scraped using Webscraper.io extension into a CSV file. Relies on audio files being unprotected such that they can be downloaded without authentication.
+
+- parses CSV
+  extracts columns `name` and `table`
+- parses HTML of every lesson
+- writes CSV for every lesson
+  columns: `"id", "pinyin", "simplified", "traditional", "translation", "audio", "audioSlow"`
+- downloads audio for every lesson
+
+
 
 ## TODO
 
-- parse again with notes
-
-
-
-## Algorithm
-
-```
-const htmlColName = "table1";
-
-// all lessons
-parse csv
-
-// lesson
-for every row
-parse cell htmlColName as HTMLDom
-loop through table
-extract data
-
-tbody
-  tr att-> data-audio-slow, data-audio-faster
-    td text-> id
-    td label text-> pinyin
-    td label text-> simplified
-    td label text-> english
-!!!! trim all values
-
-write csv
-
-
-
-fetch audio
-file name space?
-
-
-
-
-
-
-bundle lessons into decks? NO
-
-notes
-
-deck = lesson
-card = excercise
-node ID
-simpl
-trad
-pinyin
-english
-audio-fast
-audio-slow
+- add notes
+  scrape again, parse from input file, add to output file
+- Anki filename with space? Should use prefix?
