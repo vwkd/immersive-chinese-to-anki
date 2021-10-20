@@ -1,4 +1,4 @@
-export class Logger {
+class Logger {
 
   constructor(level) {
     this.level = level.toLowerCase();
@@ -35,3 +35,5 @@ const levels = {
   "warning": 3,
   "error": 4,
 }
+
+export const log = new Logger("info");

@@ -1,24 +1,25 @@
-import { Logger } from "./logger.js"
+import { log } from "./logger.js"
 import { BufReader } from "https://deno.land/std@0.112.0/io/mod.ts";
 import { parse as parseCsv, stringify as stringifyCsv } from "https://deno.land/std@0.112.0/encoding/csv.ts";
 import { DOMParser, Element } from "https://deno.land/x/deno_dom@v0.1.15-alpha/deno-dom-wasm.ts";
 import { join, basename } from "https://deno.land/std@0.112.0/path/mod.ts";
+import { delay, exists, fetchFile, writeFile } from "./utilities.js";
 
 const SOURCE_CSV = "ex.csv";
 const TARGET_AUDIO_DIR = "audios";
 const TARGET_CSV_DIR = "csv";
-const DOWNLOAD_DELAY = 100000;
+const DOWNLOAD_DELAY = 1000;
 
-const log = new Logger("info");
-const parsed = await loadLessonsCsv(SOURCE_CSV);
+const parsed = await loadLessons(SOURCE_CSV);
 const lessons = await processLessons(parsed);
-await writeLessonsCsv(lessons);
+// await writeLessons(lessons);
 await downloadAudios(lessons);
 
 /**
- * Load lessons from CSV
+ * Load raw lessons from CSV
  */
-async function loadLessonsCsv(path) {
+async function loadLessons(path) {
+  log.info(`Loading lessons from '${path}'...`);
   const file = await Deno.open(path);
   const input = new BufReader(file);
   const content = await parseCsv(input, {
@@ -29,8 +30,9 @@ async function loadLessonsCsv(path) {
 }
 
 /**
- * Process lessons
+ * Process raw lessons
  * columns: name, table
+ * Note, lessons can have more or less than 25 excercises
  */
 async function processLessons(parsed) {
   log.info(`Processing lessons...`);
@@ -47,10 +49,8 @@ async function processLessons(parsed) {
     log.debug("Processing lesson:", nameClean);
 
     const content = await processTable("<table>" + table + "</table");
-    if (content.length != 25) {
-      log.warning(`Lesson has ${content.length} excercises instead of 25`);
-    }
     lesson.content = content;
+    // log.debug(`Lesson has ${content.length} excercises`);
 
     lessons.push(lesson);
     // console.log(lesson);
@@ -60,7 +60,7 @@ async function processLessons(parsed) {
 }
 
 /**
- * Parse lesson from HTML table
+ * Parse a lesson from a HTML table
  * tbody
  *  tr -> ATTRIBUTE data-audio-slow, data-audio-fast
  *    td -> TEXT id
@@ -77,7 +77,7 @@ async function processTable(html) {
   const rows = doc.querySelectorAll("table > tbody > tr")
   for (const row of rows) {
     const excercise = {};
-    excercise.audioUrls = getAudioUrls(row)
+    excercise.audioUrls = getAudioUrl(row)
     const cols = row.querySelectorAll("td")
     excercise.content = getExcercise(cols);
     lesson.push(excercise);
@@ -87,10 +87,11 @@ async function processTable(html) {
 }
 
 /**
- * Get audio URLs
- * Slow is duplicate of fast if not available
+ * Get audio URL of excercise from HTML
+ * Adds slow version if available, otherwise is ""
+ * Note, slow audio is duplicate of fast if not available
  */
-function getAudioUrls(tr) {
+function getAudioUrl(tr) {
   const audioUrls = {};
 
   const lessonNumber = tr.getAttribute("data-toastr-text");
@@ -115,6 +116,9 @@ function getAudioUrls(tr) {
   return audioUrls;
 }
 
+/**
+ * Get content of excercise from HTML
+ */
 function getExcercise(tds) {
   const content = {};
 
@@ -170,8 +174,11 @@ function getExcercise(tds) {
   return content;
 }
 
-async function writeLessonsCsv(lessons) {
-  log.info(`Writing lessons to ${TARGET_CSV_DIR}...`);
+/**
+ * Write processed lessons to CSV
+ */
+async function writeLessons(lessons) {
+  log.info(`Writing lessons to '${TARGET_CSV_DIR}'...`);
 
   for (const { name, content } of lessons) {
     log.debug(`Writing lesson: ${name}...`);
@@ -210,19 +217,24 @@ async function writeLessonsCsv(lessons) {
   }
 }
 
+/**
+ * Download audio files
+ * Skips files that already exist
+ */
 async function downloadAudios(lessons) {
-  log.info(`Downloading audios every ${DOWNLOAD_DELAY / 1000} seconds...`);
+  log.info(`Downloading audios into ${TARGET_AUDIO_DIR}... with ${DOWNLOAD_DELAY / 1000} seconds delay`);
 
   for (const { name, content } of lessons) {
     log.info(`Downloading lesson: ${name}...`)
     for (const { audioUrls: { slowAudioUrl, fastAudioUrl }, content: { id } } of content) {
-      log.info(`Downloading excercise ${id}...`)
       const timeout = delay(DOWNLOAD_DELAY);
 
       const fastAudioPath = join(TARGET_AUDIO_DIR, basename(fastAudioUrl));
 
-      if (!await exists(fastAudioPath)) {
-        log.info(`Downloading fast audio`);
+      if (await exists(fastAudioPath)) {
+        log.info(`Skip downloading audio for ${id} because already exists.`);
+      } else {
+        log.info(`Downloading audio for ${id}...`);
         const blob = await fetchFile(fastAudioUrl);
         await writeFile(fastAudioPath, blob);
       }
@@ -230,8 +242,10 @@ async function downloadAudios(lessons) {
       if (slowAudioUrl != "") {
         const slowAudioPath = join(TARGET_AUDIO_DIR, basename(slowAudioUrl));
 
-        if (!await exists(slowAudioPath)) {
-          log.info(`Downloading slow audio`);
+        if (await exists(slowAudioPath)) {
+          log.info(`Skip downloading slow audio for ${id} because already exists.`);
+        } else {
+          log.info(`Downloading slow audio for ${id}...`);
           const blob = await fetchFile(slowAudioUrl);
           await writeFile(slowAudioPath, blob);
         }
@@ -239,53 +253,6 @@ async function downloadAudios(lessons) {
       }
 
       await timeout;
-    }
-  }
-}
-
-async function fetchFile(url) {
-  try {
-    const res = await fetch(url);
-    log.debug("Fetch", url);
-    if (!res.ok) {
-      log.error("HTTP failed", res.url, res.status, res.statusText)
-    }
-    return await res.blob();
-  } catch (e) {
-    log.error("Network failed OR blob decoding failed", e)
-  }
-}
-
-async function writeFile(path, blob) {
-  const buffer = await blob.arrayBuffer();
-  const data = new Deno.Buffer(buffer).bytes();
-
-  try {
-    await Deno.writeFile(path, data)
-    log.debug("Write", path);
-  } catch (e) {
-    log.error("Write failed", path, e);
-  }
-}
-
-async function delay(ms) {
-  return new Promise((res, rej) => {
-    setTimeout(() => {
-      res();
-    }, ms)
-  })
-}
-
-async function exists(path) {
-  try {
-    const file = await Deno.open(path);
-    Deno.close(file.rid);
-    return true;
-  } catch (e) {
-    if (e.name == "NotFound") {
-      return false;
-    } else {
-      throw e
     }
   }
 }
