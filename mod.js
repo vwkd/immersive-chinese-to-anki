@@ -1,13 +1,22 @@
-import { log } from "./logger.js"
+import { log } from "./logger.js";
 import { BufReader } from "https://deno.land/std@0.112.0/io/mod.ts";
-import { parse as parseCsv, stringify as stringifyCsv } from "https://deno.land/std@0.112.0/encoding/csv.ts";
-import { DOMParser, Element } from "https://deno.land/x/deno_dom@v0.1.15-alpha/deno-dom-wasm.ts";
-import { parse as parsePath, join } from "https://deno.land/std@0.112.0/path/mod.ts";
+import {
+  parse as parseCsv,
+  stringify as stringifyCsv,
+} from "https://deno.land/std@0.112.0/encoding/csv.ts";
+import {
+  DOMParser,
+  Element,
+} from "https://deno.land/x/deno_dom@v0.1.15-alpha/deno-dom-wasm.ts";
+import {
+  join,
+  parse as parsePath,
+} from "https://deno.land/std@0.112.0/path/mod.ts";
 import { delay, exists, fetchFile, writeFile } from "./utilities.js";
 
 const SOURCE_CSV = "ex.csv";
 const TARGET_AUDIO_DIR = "audios";
-const TARGET_CSV_DIR = "csv";
+const TARGET_CSV_DIR = "sheets";
 const DOWNLOAD_DELAY = 1000;
 
 const parsed = await loadLessons(SOURCE_CSV);
@@ -23,7 +32,14 @@ async function loadLessons(path) {
   const file = await Deno.open(path);
   const input = new BufReader(file);
   const content = await parseCsv(input, {
-    skipFirstRow: true, columns: ["web-scraper-order", "web-scraper-start-url", "name", "href", "table"]
+    skipFirstRow: true,
+    columns: [
+      "web-scraper-order",
+      "web-scraper-start-url",
+      "name",
+      "href",
+      "table",
+    ],
   });
   Deno.close(file.rid);
   return content;
@@ -74,7 +90,7 @@ async function processTable(html) {
 
   const doc = new DOMParser().parseFromString(html, "text/html");
 
-  const rows = doc.querySelectorAll("table > tbody > tr")
+  const rows = doc.querySelectorAll("table > tbody > tr");
   for (const row of rows) {
     const excercise = {};
     excercise.audioUrls = getAudioUrl(row);
@@ -132,33 +148,28 @@ function getExcercise(tds) {
         throw new Error("id shouldn't be empty");
       }
       content.id = text;
-    }
-
-    else {
+    } else {
       if (label.classList.contains("show_pinyin_text")) {
-        log.debug("Pinyin")
+        log.debug("Pinyin");
         const text = label.textContent.trim();
         if (text == "") {
           throw new Error("pinyin shouldn't be empty");
         }
         content.pinyin = text;
-
       } else if (label.classList.contains("show_simplified_characters_text")) {
-        log.debug("Simplified")
+        log.debug("Simplified");
         const text = label.textContent.trim();
         if (text == "") {
           throw new Error("simplified shouldn't be empty");
         }
         content.simplified = text;
-
       } else if (label.classList.contains("show_traditional_characters_text")) {
-        log.debug("Traditional")
+        log.debug("Traditional");
         const text = label.textContent.trim();
         if (text == "") {
           throw new Error("traditional shouldn't be empty");
         }
         content.traditional = text;
-
       } else if (label.classList.contains("show_translation_characters_text")) {
         log.debug("Translation");
         const text = label.textContent.trim();
@@ -167,7 +178,6 @@ function getExcercise(tds) {
         }
         content.translation = text;
       }
-
     }
   }
 
@@ -187,12 +197,16 @@ async function writeLessons(lessons) {
   for (const { name, content } of lessons) {
     log.debug(`Writing lesson: ${name}...`);
 
-    const lessonPath = join(TARGET_CSV_DIR, name + ".csv")
+    const lessonPath = join(TARGET_CSV_DIR, name + ".csv");
 
     const lessonPolished = [];
 
-    for (const { audioUrls: { slowAudioUrl, fastAudioUrl }, content: { id, pinyin, simplified, traditional, translation, } } of content) {
-
+    for (
+      const {
+        audioUrls: { slowAudioUrl, fastAudioUrl },
+        content: { id, pinyin, simplified, traditional, translation },
+      } of content
+    ) {
       const audio = getFastAudioFileName(fastAudioUrl);
       const audioSlow = getSlowAudioFileName(slowAudioUrl);
 
@@ -204,7 +218,7 @@ async function writeLessons(lessons) {
         translation,
         audio,
         audioSlow,
-      })
+      });
     }
 
     const csvString = await stringifyCsv(lessonPolished, [
@@ -227,14 +241,24 @@ async function writeLessons(lessons) {
  * Skips files that already exist
  */
 async function downloadAudios(lessons) {
-  log.info(`Downloading audios into ${TARGET_AUDIO_DIR}... with ${DOWNLOAD_DELAY / 1000} seconds delay`);
+  log.info(
+    `Downloading audios into ${TARGET_AUDIO_DIR}... with ${
+      DOWNLOAD_DELAY / 1000
+    } seconds delay`,
+  );
 
   for (const { name, content } of lessons) {
-    log.info(`Downloading lesson: ${name}...`)
-    for (const { audioUrls: { slowAudioUrl, fastAudioUrl }, content: { id } } of content) {
+    log.info(`Downloading lesson: ${name}...`);
+    for (
+      const { audioUrls: { slowAudioUrl, fastAudioUrl }, content: { id } }
+        of content
+    ) {
       const timeout = delay(DOWNLOAD_DELAY);
 
-      const fastAudioPath = join(TARGET_AUDIO_DIR, getFastAudioFileName(fastAudioUrl));
+      const fastAudioPath = join(
+        TARGET_AUDIO_DIR,
+        getFastAudioFileName(fastAudioUrl),
+      );
 
       if (await exists(fastAudioPath)) {
         log.info(`Skip downloading audio for ${id} because already exists.`);
@@ -245,16 +269,20 @@ async function downloadAudios(lessons) {
       }
 
       if (slowAudioUrl != "") {
-        const slowAudioPath = join(TARGET_AUDIO_DIR, getSlowAudioFileName(slowAudioUrl));
+        const slowAudioPath = join(
+          TARGET_AUDIO_DIR,
+          getSlowAudioFileName(slowAudioUrl),
+        );
 
         if (await exists(slowAudioPath)) {
-          log.info(`Skip downloading slow audio for ${id} because already exists.`);
+          log.info(
+            `Skip downloading slow audio for ${id} because already exists.`,
+          );
         } else {
           log.info(`Downloading slow audio for ${id}...`);
           const blob = await fetchFile(slowAudioUrl);
           await writeFile(slowAudioPath, blob);
         }
-
       }
 
       await timeout;
@@ -267,8 +295,8 @@ async function downloadAudios(lessons) {
  * Add "IC " to beginning
  */
 function getFastAudioFileName(url) {
-  const {base} = parsePath(url);
-  const newBase = "IC " + base
+  const { base } = parsePath(url);
+  const newBase = "IC " + base;
   log.debug(base, "->", newBase);
   return newBase;
 }
@@ -282,7 +310,7 @@ function getSlowAudioFileName(url) {
   if (url == "") {
     return url;
   }
-  const {base, name, ext} = parsePath(url);
+  const { base, name, ext } = parsePath(url);
   const regex = /^(.+) (Slow)(.+)$/;
   const matches = name.match(regex);
   const newName = "IC " + matches[1] + matches[3] + " " + matches[2];

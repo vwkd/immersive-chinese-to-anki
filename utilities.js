@@ -1,11 +1,11 @@
-import { log } from "./logger.js"
+import { log } from "./logger.js";
 
 export async function delay(ms) {
   return new Promise((res, rej) => {
     setTimeout(() => {
       res();
-    }, ms)
-  })
+    }, ms);
+  });
 }
 
 export async function exists(path) {
@@ -26,15 +26,15 @@ export async function fetchFile(url) {
     const res = await fetch(url);
     log.debug("Fetching", url);
     if (!res.ok) {
-      log.error("HTTP failed", res.url, res.status, res.statusText)
+      log.error("HTTP failed", res.url, res.status, res.statusText);
     }
     try {
       return await res.blob();
     } catch (err) {
-      log.error("Blob failed", err)
+      log.error("Blob failed", err);
     }
   } catch (err) {
-    log.error("Network failed", err)
+    log.error("Network failed", err);
   }
 }
 
@@ -43,7 +43,7 @@ export async function writeFile(path, blob) {
   const data = new Deno.Buffer(buffer).bytes();
 
   try {
-    await Deno.writeFile(path, data)
+    await Deno.writeFile(path, data);
     log.debug("Writing", path);
   } catch (err) {
     log.error("Writing failed", path, err);
