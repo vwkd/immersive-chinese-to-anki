@@ -5,6 +5,7 @@ Scrapes lessons from Immersive Chinese for Anki
 
 
 ## Stats
+
 - 160 Lessons + 9 Extra Stories
 - A lesson has usually (but not always) 25 Excercises
 - 6000 Audios, fast audio for every excercise, for about half also slow
@@ -19,18 +20,18 @@ IC website is thankfully not very well designed which makes scraping straightfor
 
 ## Usage
 
-1. Scrape raw HTML table of all excercises for each lesson into CSV
+1. Scrape all excercises for each lesson into CSV
 
 Use Webscraper.io Chrome extension with [sitemap](sitemap.txt) for the config.
 
-Webscraper can parse tables. But unfortunately not without a header row. Setting it to the first row doesn't work because it changes on every page. Therefore must scrape the raw HTML of the table and do own parsing.
+Note, doesn't scrape from table directly since Webscraper can't parse tables without a header row. Setting it to the first row doesn't work because it changes on every page.
 
-2. Parse CSV, parse HTML, output CSVs
+2. Parse CSV, write CSV for every lesson, optionally download audios
 
-Run `deno run -A mod.js`.
+Run `deno run -A mod.js source.csv target_dir` to parse CSV and write CSV for every lesson.
+Run `deno run -A mod.js source.csv target_dir audio_target_dir` to also download audios.
 
-The script parses the CSV, extracts the columns `name` and `table`, parses the HTML in the `table` column for every lesson. Then it writes a CSV for every lesson with the columns: `"id", "pinyin", "simplified", "traditional", "translation", "audio", "audioSlow"`
-- downloads audio for every lesson
+Note, the target directories must already exist. Files that already exist are not overwritten. Audios that already exist aren't downloaded again.
 
 3. Import into Anki
 
@@ -41,9 +42,3 @@ If AnkiWeb is used, then MP4 files have to be converted to MP3 since MP4 files a
 Also Anki falsely reports unused Media if the audio fields only contain the filepath and only the Card Template contains the `[sound: .. ]` directive.
 
 The space in the filename is handled by Anki fine.
-
-
-
-## TODO
-
-- Doesn't scrape the notes on the excercises. They seem to not be in the table. Would need to paginate through.
