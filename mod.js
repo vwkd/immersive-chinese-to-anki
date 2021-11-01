@@ -43,7 +43,7 @@ if (!TARGET_CSV_DIR) {
 }
 
 const parsed = await loadLessons(SOURCE_CSV);
-const lessons = await processLessons(parsed);
+const lessons = processLessons(parsed);
 await writeLessons(lessons);
 if (TARGET_AUDIO_DIR) {
   await downloadAudios(parsed);
@@ -67,11 +67,11 @@ async function loadLessons(path) {
 
 /**
  * Process lessons
- * Returns object with lessons as values, lesson is object with name and array of excercises
+ * Returns object with lessons as values, lesson is object with name and array of exercises
  * Note, slow audio is duplicate of fast if not available
- * Note, lessons can have more or less than 25 excercises
+ * Note, lessons can have more or less than 25 exercises
  */
-async function processLessons(parsed) {
+function processLessons(parsed) {
   log.info(`Processing lessons...`);
 
   const lessons = {};
