@@ -1,6 +1,12 @@
 # Immersive Chinese to Anki
 
-Tools to scrape serial courses and vocabulary from Immersive Chinese and create cards in Anki. Anki benefits include a card search, tags instead of lists, and a spaced-repetition trainer.
+Tools for scraping Immersive Chinese content and create Anki cards.
+
+
+
+## Why?
+
+IC essentially replicates a limited Anki set. Notably it lacks card search, tags instead of lists, and a spaced-repetition trainer. Although the UI of IC is certainly nicer, having the full features of Anki may help with learning.
 
 
 
@@ -62,7 +68,9 @@ For every lesson create a new Deck and import the CSV file. Should use a subdeck
 
 ## Architecture
 
-IC website is thankfully very simple. It loads the data for an entire lesson such that it can be easily scraped. Also the audio URLs are static and unprotected such that the script can fetch them without authentication.
+The scraping relies on the fact that IC loads the data for an entire lesson and renders individual exercises only client-side.
+
+The script downloading the audio relies on the fact that audio URLs are static and unprotected such that they can be fetched without authentication.
 
 
 
