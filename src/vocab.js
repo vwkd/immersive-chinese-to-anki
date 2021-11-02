@@ -80,7 +80,6 @@ function processVocab(parsed) {
         translation,
       },
     ) => {
-
       return {
         lesson: lesson.trim(),
         identifier: identifier.trim(),
@@ -90,8 +89,6 @@ function processVocab(parsed) {
         translation: translation.trim(),
         audio: getAudioFileName(identifier),
       };
-
-
     },
   );
 }
@@ -126,10 +123,10 @@ async function writeVocab(vocab) {
  */
 async function downloadAudios(parsed) {
   log.info(
-    `Downloading audios into ${TARGET_AUDIO_DIR}... with ${DOWNLOAD_DELAY / 1000
+    `Downloading audios into ${TARGET_AUDIO_DIR}... with ${
+      DOWNLOAD_DELAY / 1000
     } seconds delay`,
   );
-
 
   for (const { identifier } of parsed) {
     log.info(`Downloading audio for ${identifier}...`);
@@ -140,7 +137,7 @@ async function downloadAudios(parsed) {
       getAudioFileName(identifier),
     );
 
-    const audioUrl = `https://www.immersivechinese.com/vocab/${identifier}.mp4`
+    const audioUrl = `https://www.immersivechinese.com/vocab/${identifier}.mp4`;
 
     if (await exists(audioPath)) {
       log.debug(
