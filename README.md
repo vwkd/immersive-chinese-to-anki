@@ -29,12 +29,12 @@ Run the script on the CSV. Mandatory arguments: CSV source file, CSV target dire
 
 ```sh
 mkdir -p mkdir dist/serial-course/audio
-deno run -allow-read --allow-write --allow-net src/serial-course.js serial-course.csv dist/serial-course dist/serial-course/audio
+deno run --allow-read --allow-write --allow-net src/serial-course.js serial-course.csv dist/serial-course dist/serial-course/audio
 ```
 
 ```sh
 mkdir -p dist/vocab/audio
-deno run -allow-read --allow-write --allow-net src/vocab.js vocab.csv dist/vocab dist/vocab/audio
+deno run --allow-read --allow-write --allow-net src/vocab.js vocab.csv dist/vocab dist/vocab/audio
 ```
 
 Note, the target directory must already exist. Files that already exist are not overwritten. Audios that already exist aren't downloaded again.
