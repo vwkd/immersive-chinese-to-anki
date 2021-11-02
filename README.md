@@ -56,9 +56,11 @@ Note, the target directory must already exist. Files that already exist are not 
 
 Import CSV files into Anki and move the audio files into Anki's media directory. Make sure to select the right Card Type, the right Deck, and confirm that the Field Mapping is correct. This will be the most laborious task for multiple CSV files.
 
-You can create a new Card Type for each type of content (Serial Course, Vocabulary, Pronunciation). See [docs](docs) for an example. Note, Anki falsely reports unused Media if the audio field contains only the filepath and the `[sound: ..]` directive is in the Card Template.
-
 You can create subdecks for each type of content and lesson, e.g. `IC::Serial Course::A::Lesson 1`, `IC::Pronunciation::Lesson 1`, etc.
+
+You can create a new Card Type for each type of content (Serial Course, Vocabulary, Pronunciation). See [card-templates](card-templates) for an example that looks like IC and plays the fast audio on the front. Use it together with a new Deck Option that disables automatic audio playing. You can apply the Deck Option to all subdecks as well.
+
+Note, Anki falsely reports unused Media if the audio field contains only the filepath and the `[sound: ..]` directive is in the Card Template.
 
 Note, if AnkiWeb is used then the MP4 files have to be converted to MP3 since MP4 isn't supported. This can be done using [ffmpeg](https://stackoverflow.com/questions/38449239/converting-all-the-mp4-audio-files-in-a-folder-to-mp3-using-ffmpeg) and the filename in the Anki cards can be renamed in the Card Browser using Find and Replace, e.g. Find `(.+?)mp4`, replace with `${1}mp3`, in `Audio`, treat as regular expression.
 

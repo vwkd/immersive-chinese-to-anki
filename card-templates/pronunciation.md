@@ -1,20 +1,19 @@
-# Serial Course Card Type
+# Pronunciation Card Type
 
 
 
 ## Introduction
 
 - copy of Note Type `Basic`
-- fields: ID, Simplified, Traditional, Pinyin, English, Note, Audio, Audio slow
+- fields: ID, Pinyin, Description, Audio
 - note, use together with Deck Option that disables automatic audio play
 
 
 
 ## Front Template
 
-- plays fast audio automatically
+- plays audio automatically
 - note, doesn't work in AnkiWeb in browsers where autoplay is blocked, e.g. Safari
-- note, uses traditional characters, can use simplified instead
 
 ```html
 <div class="wrapper">
@@ -24,36 +23,23 @@
 <div class="box content">
   <div class="pinyin">{{Pinyin}}</div>
   <hr>
-  <div class="hanzi">{{Traditional}}</div>
-  <hr>
-  <div>{{English}}</div>
+  <div>{{Description}}</div>
 </div>
 
-{{#Note}}
-<div class="header">
-<span>note</span>
-</div>
-
-<div class="box note">{{Note}}</div>
-{{/Note}}
-
-<div class="audio">
-<span class="fast">[sound:{{Audio}}]</span>
-<span class="slow">[sound:{{Audio slow}}]</span>
-</div>
+<div class="audio">[sound:{{Audio}}]</div>
 
 </div>
 
 <script>
-// autoplay fast audio, only on front template
+// autoplay audio, only on front template
 
 // desktop
-var anchor = document.querySelector(".fast .replay-button");
+var anchor = document.querySelector(".audio .replay-button");
 if (anchor) { anchor.click(); }
 
 // browser
 // note, doesn't work if autoplay is blocked like in Safari
-var audio = document.querySelector(".fast audio");
+var audio = document.querySelector(".audio audio");
 if (audio) { audio.play(); }
 </script>
 ```
@@ -62,31 +48,16 @@ if (audio) { audio.play(); }
 
 ## Back Template
 
-- note, uses traditional characters, can use simplified instead
-
 ```html
 <div class="id">{{ID}}</div>
 
 <div class="box content">
   <div class="pinyin">{{Pinyin}}</div>
   <hr>
-  <div class="hanzi">{{Traditional}}</div>
-  <hr>
-  <div>{{English}}</div>
+  <div>{{Description}}</div>
 </div>
 
-{{#Note}}
-<div class="header">
-<span>note</span>
-</div>
-
-<div class="box note">{{Note}}</div>
-{{/Note}}
-
-<div class="audio">
-<span class="fast">[sound:{{Audio}}]</span>
-<span class="slow">[sound:{{Audio slow}}]</span>
-</div>
+<div class="audio">[sound:{{Audio}}]</div>
 ```
 
 
@@ -138,23 +109,9 @@ if (audio) { audio.play(); }
   margin-bottom: 1rem;
 }
 
-.header span {
-  background-color: #46b4dd;
-  padding: 0.2rem 0.5rem;
-  border-radius: 3px 10px;
-  color: white;
-}
-
-.note {
-  padding: 0.5rem;
-  border-radius: 0.3rem;
-  /* font-weight: 300; */
-}
-
 .audio {
   display: flex;
   align-items: center;
-  /* can't center the big blue button because in browser uses audio element */
   justify-content: center;
 }
 
@@ -168,7 +125,7 @@ if (audio) { audio.play(); }
   fill: white;
 }
 
-.audio .fast .replay-button svg {
+.audio .replay-button svg {
   width: 100px;
   height: 100px;
 }
@@ -183,4 +140,4 @@ if (audio) { audio.play(); }
 .nightMode .box {
   background-color: #1c1c1e;
 }
-``` 
+```
