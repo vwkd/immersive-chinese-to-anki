@@ -37,6 +37,10 @@ mkdir -p dist/vocab/audio
 deno run --allow-read --allow-write --allow-net src/vocab.js vocab.csv dist/vocab dist/vocab/audio
 ```
 
+```sh
+mkdir -p dist/pronounciation/audio
+deno run --allow-read --allow-write --allow-net src/pronounciation.js pronounciation.csv dist/pronounciation dist/pronounciation/audio
+```
 Note, the target directory must already exist. Files that already exist are not overwritten. Audios that already exist aren't downloaded again.
 
 ### 3. Import data into Anki
@@ -72,3 +76,8 @@ IC website is thankfully very simple. It loads the data for an entire lesson suc
 ### Vocabulary
 
 - ~930 entries with audio: about 1 for every 5 exercises
+
+### Pronounciation
+
+- 10 lessons
+- ~250 exercises and audios: ~25 exercises per lesson
