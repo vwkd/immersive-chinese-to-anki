@@ -133,7 +133,7 @@ async function downloadAudios(parsed) {
 
   for (const { identifier } of parsed) {
     log.info(`Downloading audio for ${identifier}...`);
-    const timeout = delay(DOWNLOAD_DELAY);
+    let timeout;
 
     const audioPath = join(
       TARGET_AUDIO_DIR,
@@ -148,6 +148,7 @@ async function downloadAudios(parsed) {
       );
     } else {
       log.debug(`Downloading audio.`);
+      timeout = delay(DOWNLOAD_DELAY);
       const blob = await fetchFile(audioUrl);
       await writeFile(audioPath, blob);
     }

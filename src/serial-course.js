@@ -174,7 +174,7 @@ async function downloadAudios(parsed) {
 
   for (const { audioFastUrl, audioSlowUrl, identifier } of parsed) {
     log.info(`Downloading audio for ${identifier}...`);
-    const timeout = delay(DOWNLOAD_DELAY);
+    let timeout;
 
     const fastAudioPath = join(
       TARGET_AUDIO_DIR,
@@ -187,6 +187,7 @@ async function downloadAudios(parsed) {
       );
     } else {
       log.debug(`Downloading fast audio.`);
+      timeout = delay(DOWNLOAD_DELAY);
       const blob = await fetchFile(audioFastUrl);
       await writeFile(fastAudioPath, blob);
     }
@@ -203,6 +204,7 @@ async function downloadAudios(parsed) {
         );
       } else {
         log.debug(`Downloading slow audio.`);
+        if (!timeout) timeout = delay(DOWNLOAD_DELAY);
         const blob = await fetchFile(audioSlowUrl);
         await writeFile(slowAudioPath, blob);
       }
