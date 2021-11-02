@@ -1,6 +1,6 @@
 # Immersive Chinese to Anki
 
-Tools to scrape serial courses and vocabulary from Immersive Chinese for use in Anki. Anki benefits from a card search, tags instead of lists, and a spaced-repetition trainer.
+Tools to scrape serial courses and vocabulary from Immersive Chinese and create cards in Anki. Anki benefits include a card search, tags instead of lists, and a spaced-repetition trainer.
 
 
 
@@ -23,7 +23,7 @@ Note, Webscraper has a free limit of 500 scrapes. In this case it isn't hit if y
 
 Note, doesn't scrape from table directly since Webscraper can't parse tables without a header row. Setting it to the first row doesn't work because it changes on every page.
 
-### Convert data using scripts
+### 2. Convert data using scripts
 
 Run the script on the CSV. Mandatory arguments: CSV source file, CSV target directory. Optional argument: audio target directory
 
@@ -39,7 +39,7 @@ deno run -allow-read --allow-write --allow-net src/vocab.js vocab.csv dist/vocab
 
 Note, the target directory must already exist. Files that already exist are not overwritten. Audios that already exist aren't downloaded again.
 
-### Import data into Anki
+### 3. Import data into Anki
 
 - Create a new Card Type for all IC cards
 - Import CSV, create a new Subdeck for each lesson, e.g. `IC::A::Lesson 1`. Make sure to select the right Card Type, the right Deck, and confirm that the Field Mapping is correct.
@@ -71,5 +71,4 @@ IC website is thankfully very simple. It loads the data for an entire lesson suc
 
 ### Vocabulary
 
-- ~930 entries: about 1 for every 5 exercises
-- ~930 audios
+- ~930 entries with audio: about 1 for every 5 exercises

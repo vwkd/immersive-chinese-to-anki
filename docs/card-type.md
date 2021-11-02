@@ -56,7 +56,7 @@ if (audio) { audio.play(); }
 
 ### Back Template
 
-```
+```html
 <div class="id">{{ID}}</div>
 
 <div class="box content">
