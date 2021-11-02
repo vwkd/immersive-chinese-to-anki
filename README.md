@@ -23,15 +23,17 @@ IC essentially replicates a limited Anki set. Notably it lacks card search, tags
 
 ### 1. Scrape data from IC
 
-Open Webscraper, import a sitemap, log into IC, scrape the data and export it as CSV.
+Open Chromium browser, open IC and log in. Open Webscraper in Developer Tools, import a sitemap, scrape the data and export it as CSV.
 
 Note, Webscraper has a free limit of 500 scrapes. In this case it isn't hit if you only do it once but if you repeat it multiple times you may want to delete and reinstall the extension. Note that Webscraper has no status messages and it might not be obvious if it succeeded or quit early.
 
-Note, doesn't scrape from table directly since Webscraper can't parse tables without a header row. Setting it to the first row doesn't work because it changes on every page.
+Note, we don't scrape from the table directly since Webscraper can't parse tables without a header row. Setting it to the first row doesn't work because it changes on every page.
 
 ### 2. Convert data using scripts
 
-Run the script on the CSV. Mandatory arguments: CSV source file, CSV target directory. Optional argument: audio target directory
+Run the script on the CSV.
+
+First two arguments are mandatory, CSV source file and CSV target directory. Third argument is optional, audio target directory. Note, downloads audio only if third argument is given.
 
 ```sh
 mkdir -p out/serial-course/audio
@@ -52,17 +54,13 @@ Note, the target directory must already exist. Files that already exist are not 
 
 ### 3. Import data into Anki
 
-- Create a new Card Type for all IC cards
-- Import CSV, create a new Subdeck for each lesson, e.g. `IC::A::Lesson 1`. Make sure to select the right Card Type, the right Deck, and confirm that the Field Mapping is correct.
-- Move audio files into Anki's media directory
+Import CSV files into Anki and move the audio files into Anki's media directory. Make sure to select the right Card Type, the right Deck, and confirm that the Field Mapping is correct. This will be the most laborious task for multiple CSV files.
 
-For a Card Template see [docs](docs).
+You can create a new Card Type for each type of content (Serial Course, Vocabulary, Pronunciation). See [docs](docs) for an example. Note, Anki falsely reports unused Media if the audio field contains only the filepath and the `[sound: ..]` directive is in the Card Template.
 
-Note, if AnkiWeb is used, then the MP4 files have to be converted to MP3 since MP4 isn't supported. This can be done using [ffmpeg](https://stackoverflow.com/questions/38449239/converting-all-the-mp4-audio-files-in-a-folder-to-mp3-using-ffmpeg) and the filename in the Anki cards can be renamed in the Card Browser using Find and Replace, e.g. Find `(.+?)mp4`, replace with `${1}mp3`, in `Audio`, treat as regular expression.
+You can create subdecks for each type of content and lesson, e.g. `IC::Serial Course::A::Lesson 1`, `IC::Pronunciation::Lesson 1`, etc.
 
-Note, Anki falsely reports unused Media if the audio field contains only the filepath and the `[sound: ..]` directive is in the Card Template.
-
-For every lesson create a new Deck and import the CSV file. Should use a subdeckname for ordering, e.g. `IC::A::Lesson 1`. This is the labor intensive part.
+Note, if AnkiWeb is used then the MP4 files have to be converted to MP3 since MP4 isn't supported. This can be done using [ffmpeg](https://stackoverflow.com/questions/38449239/converting-all-the-mp4-audio-files-in-a-folder-to-mp3-using-ffmpeg) and the filename in the Anki cards can be renamed in the Card Browser using Find and Replace, e.g. Find `(.+?)mp4`, replace with `${1}mp3`, in `Audio`, treat as regular expression.
 
 
 
