@@ -59,7 +59,7 @@ async function loadPronounciations(path) {
     /* Throws `Error number of fields line:1`, maybe because other headers have hyphens? */
     /* columns: COLUMNS_INPUT,*/
   });
-  Deno.close(file.rid);
+  file.close(file.rid);
   return content;
 }
 
@@ -164,8 +164,7 @@ async function writePronounciations(pronounciations) {
  */
 async function downloadAudios(parsed) {
   log.info(
-    `Downloading audios into ${TARGET_AUDIO_DIR}... with ${
-      DOWNLOAD_DELAY / 1000
+    `Downloading audios into ${TARGET_AUDIO_DIR}... with ${DOWNLOAD_DELAY / 1000
     } seconds delay`,
   );
 

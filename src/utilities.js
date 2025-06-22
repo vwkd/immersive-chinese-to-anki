@@ -11,7 +11,7 @@ export async function delay(ms) {
 export async function exists(path) {
   try {
     const file = await Deno.open(path);
-    Deno.close(file.rid);
+    file.close();
     return true;
   } catch (err) {
     if (err instanceof Deno.errors.NotFound) {
@@ -40,7 +40,7 @@ export async function fetchFile(url) {
 
 export async function writeFile(path, blob) {
   const buffer = await blob.arrayBuffer();
-  const data = new Deno.Buffer(buffer).bytes();
+  const data = new Uint8Array(buffer);
 
   try {
     await Deno.writeFile(path, data);
