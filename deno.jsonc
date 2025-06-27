@@ -1,10 +1,9 @@
 {
   "tasks": {
-    "pronunciation": "deno run -RWN src/pronunciation/main.ts",
-    "serial-course": "deno run -RWN src/serial-course/main.ts",
-    "vocabulary": "deno run -RWN src/vocabulary/main.ts"
+    "run": "deno run -RWN src/main.ts"
   },
   "imports": {
+    "@cliffy/command": "jsr:@cliffy/command@1.0.0-rc.7",
     "@logtape/logtape": "jsr:@logtape/logtape@^1.0.0",
     "@std/async": "jsr:@std/async@^1.0.13",
     "@std/csv": "jsr:@std/csv@^1.0.6",
