@@ -31,6 +31,8 @@ export async function writeVocabulary(
 ): Promise<void> {
   log.info(`Writing vocabulary to '${dir}'...`);
 
+  await Deno.mkdir(dir, { recursive: true });
+
   const vocabularyPath = join(dir, "vocabulary.csv");
 
   const csvString = stringifyCsv(vocabulary, {

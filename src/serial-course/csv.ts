@@ -31,6 +31,8 @@ export async function writeLessons(
 ): Promise<void> {
   log.info(`Writing lessons to '${dir}'...`);
 
+  await Deno.mkdir(dir, { recursive: true });
+
   const promises = [];
 
   for (const { name, exercises } of Object.values(lessons)) {

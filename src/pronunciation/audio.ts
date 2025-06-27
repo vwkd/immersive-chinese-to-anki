@@ -21,6 +21,8 @@ export async function downloadAudios(parsed: Data, dir: string): Promise<void> {
     } seconds delay`,
   );
 
+  await Deno.mkdir(dir, { recursive: true });
+
   for (const { audioFastUrl: audioUrl } of parsed) {
     log.info(`Downloading audio ${getAudioFileName(audioUrl)}...`);
     let timeout: Promise<void> | undefined;
