@@ -1,5 +1,9 @@
 import { getLogger } from "@logtape/logtape";
-import { getFastAudioFileName, getSlowAudioFileName } from "./utils.ts";
+import {
+  getFastAudioFileName,
+  getFastMaleAudioFileName,
+  getSlowAudioFileName,
+} from "./utils.ts";
 import type { Data, Exercise, Lesson, Lessons } from "./types.ts";
 
 const log = getLogger(["ic-to-anki", "serial-course", "process"]);
@@ -34,6 +38,7 @@ export function processLessons(parsed: Data): Lessons {
       const name = lesson.trim().match(regex)[1];
 
       const audioFast = getFastAudioFileName(audioFastUrl);
+      const audioFastMale = getFastMaleAudioFileName(audioFastUrl);
 
       let audioSlow = "";
       if (audioSlowUrl != audioFastUrl) {
@@ -54,6 +59,7 @@ export function processLessons(parsed: Data): Lessons {
         translation: translation.trim(),
         note: note.trim(),
         audioFast,
+        audioFastMale,
         audioSlow,
       };
 

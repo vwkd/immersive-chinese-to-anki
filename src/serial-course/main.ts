@@ -15,6 +15,7 @@ export const COLUMNS_INPUT = [
   "translation",
   "note",
   "audioFastUrl",
+  "audioFastMaleId",
   "audioSlowUrl",
   "identifier",
 ] as const;
@@ -26,6 +27,7 @@ export const COLUMNS_OUTPUT = [
   "translation",
   "note",
   "audioFast",
+  "audioFastMale",
   "audioSlow",
 ] as const;
 

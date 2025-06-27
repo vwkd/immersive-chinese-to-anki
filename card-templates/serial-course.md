@@ -5,7 +5,7 @@
 ## Introduction
 
 - copy of Note Type `Basic`
-- fields: ID, Simplified, Traditional, Pinyin, English, Note, Audio, Audio slow
+- fields: ID, Simplified, Traditional, Pinyin, English, Note, Audio, Audio 2, Audio slow
 - note, use together with Deck Option that disables automatic audio play
 
 
@@ -39,6 +39,7 @@
 
 <div class="audio">
 <span class="fast">[sound:{{Audio}}]</span>
+<span class="fast2">[sound:{{Audio 2}}]</span>
 <span class="slow">[sound:{{Audio slow}}]</span>
 </div>
 
@@ -85,6 +86,7 @@ if (audio) { audio.play(); }
 
 <div class="audio">
 <span class="fast">[sound:{{Audio}}]</span>
+<span class="fast2">[sound:{{Audio 2}}]</span>
 <span class="slow">[sound:{{Audio slow}}]</span>
 </div>
 ```
