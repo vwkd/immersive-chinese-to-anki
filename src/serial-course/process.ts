@@ -1,6 +1,8 @@
-import { log } from "../logger.ts";
+import { getLogger } from "@logtape/logtape";
 import { getFastAudioFileName, getSlowAudioFileName } from "./utils.ts";
 import type { Data, Exercise, Lesson, Lessons } from "./types.ts";
+
+const log = getLogger(["ic-to-anki", "serial-course", "process"]);
 
 /**
  * Process lessons

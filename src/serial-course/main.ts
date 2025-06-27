@@ -1,3 +1,4 @@
+import { configure, getConsoleSink } from "@logtape/logtape";
 import { loadLessons, writeLessons } from "./csv.ts";
 import { processLessons } from "./process.ts";
 import { downloadAudios } from "./audio.ts";
@@ -35,6 +36,20 @@ if (!SOURCE_CSV) {
 if (!TARGET_CSV_DIR) {
   throw new Error("No target directory specified");
 }
+
+await configure({
+  sinks: {
+    console: getConsoleSink(),
+  },
+  loggers: [
+    {
+      category: ["ic-to-anki", "serial-course"],
+      lowestLevel: "info",
+      sinks: ["console"],
+    },
+    { category: ["logtape", "meta"], sinks: [] },
+  ],
+});
 
 const parsed = await loadLessons(SOURCE_CSV);
 const lessons = processLessons(parsed);

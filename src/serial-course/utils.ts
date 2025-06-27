@@ -1,5 +1,7 @@
-import { log } from "../logger.ts";
+import { getLogger } from "@logtape/logtape";
 import { parse as parsePath } from "@std/path";
+
+const log = getLogger(["ic-to-anki", "serial-course", "utils"]);
 
 /**
  * Get filename for fast audio from URL
@@ -8,7 +10,7 @@ import { parse as parsePath } from "@std/path";
 export function getFastAudioFileName(url: string): string {
   const { base } = parsePath(url);
   const newBase = "IC " + base;
-  log.debug(base, "->", newBase);
+  log.debug(`${base} -> ${newBase}`);
   return newBase;
 }
 
@@ -22,6 +24,6 @@ export function getSlowAudioFileName(url: string): string {
   const matches = name.match(regex);
   const newName = "IC " + matches[1] + matches[3] + " " + matches[2];
   const newBase = newName + ext;
-  log.debug(base, "->", newBase);
+  log.debug(`${base} -> ${newBase}`);
   return newBase;
 }

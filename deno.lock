@@ -1,6 +1,7 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@logtape/logtape@1": "1.0.0",
     "jsr:@std/async@^1.0.13": "1.0.13",
     "jsr:@std/csv@^1.0.6": "1.0.6",
     "jsr:@std/fs@^1.0.18": "1.0.18",
@@ -8,6 +9,9 @@
     "jsr:@std/streams@^1.0.9": "1.0.9"
   },
   "jsr": {
+    "@logtape/logtape@1.0.0": {
+      "integrity": "30e23091ed75daac9eaff83688a90ccfbb7e75e79d0344d5a6e9585e6f653f92"
+    },
     "@std/async@1.0.13": {
       "integrity": "1d76ca5d324aef249908f7f7fe0d39aaf53198e5420604a59ab5c035adc97c96"
     },
@@ -49,6 +53,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@logtape/logtape@1",
       "jsr:@std/async@^1.0.13",
       "jsr:@std/csv@^1.0.6",
       "jsr:@std/fs@^1.0.18",

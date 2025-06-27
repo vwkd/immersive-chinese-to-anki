@@ -3,6 +3,7 @@
  * Assumes slow audio is duplicate of fast, discards it
  */
 
+import { configure, getConsoleSink } from "@logtape/logtape";
 import { loadPronunciations, writePronunciations } from "./csv.ts";
 import { processPronunciations } from "./process.ts";
 import { downloadAudios } from "./audio.ts";
@@ -33,6 +34,20 @@ if (!SOURCE_CSV) {
 if (!TARGET_CSV_DIR) {
   throw new Error("No target directory specified");
 }
+
+await configure({
+  sinks: {
+    console: getConsoleSink(),
+  },
+  loggers: [
+    {
+      category: ["ic-to-anki", "pronunciation"],
+      lowestLevel: "info",
+      sinks: ["console"],
+    },
+    { category: ["logtape", "meta"], sinks: [] },
+  ],
+});
 
 const parsed = await loadPronunciations(SOURCE_CSV);
 const pronunciations = processPronunciations(parsed);

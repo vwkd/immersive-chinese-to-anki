@@ -1,6 +1,8 @@
-import { log } from "../logger.ts";
+import { getLogger } from "@logtape/logtape";
 import { getAudioFileName } from "./utils.ts";
 import type { Data, Vocabulary } from "./types.ts";
+
+const log = getLogger(["ic-to-anki", "vocabulary", "process"]);
 
 /**
  * Process vocabulary

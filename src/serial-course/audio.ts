@@ -1,4 +1,4 @@
-import { log } from "../logger.ts";
+import { getLogger } from "@logtape/logtape";
 import { join } from "@std/path/join";
 import { exists } from "@std/fs/exists";
 import { delay } from "@std/async/delay";
@@ -7,6 +7,8 @@ import { getFastAudioFileName, getSlowAudioFileName } from "./utils.ts";
 import type { Data } from "./types.ts";
 
 const DOWNLOAD_DELAY = 1000;
+
+const log = getLogger(["ic-to-anki", "serial-course", "audio"]);
 
 /**
  * Download audio files
