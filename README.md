@@ -1,56 +1,49 @@
 # Immersive Chinese to Anki
 
-Tools for scraping Immersive Chinese content and create Anki cards.
+Create Anki cards from Immersive Chinese content
 
 
 
-## Why?
+## Motivation
 
-IC essentially replicates a limited Anki set. Notably it lacks card search, tags instead of lists, and a spaced-repetition trainer. Although the UI of IC is certainly nicer, having the full features of Anki may help with learning.
+Immersive Chinese essentially replicates a limited Anki set. Notably it lacks card search, tags instead of lists, and a spaced-repetition trainer. Although the UI of Immersive Chinese is certainly nicer, having the full features of Anki may help with learning.
 
 
 
 ## Requirements
 
-- paid IC subscription
+- paid Immersive Chinese subscription
 - deno
-- Chromium browser, e.g. Chrome, Brave, etc.
-- Webscraper.io extension
+- browser with Webscraper.io extension
 
 
 
 ## Usage
 
-### 1. Scrape data from IC
+### 1. Scrape data from Immersive Chinese
 
-Open Chromium browser, open IC and log in. Open Webscraper in Developer Tools, import a sitemap, scrape the data and export it as CSV.
+Open Immersive Chinese in browser and log in. Open Webscraper in Developer Tools, import the [sitemaps](sitemaps), scrape the data and export it as CSV.
 
 Note, Webscraper has a free limit of 500 scrapes. In this case it isn't hit if you only do it once but if you repeat it multiple times you may want to delete and reinstall the extension. Note that Webscraper has no status messages and it might not be obvious if it succeeded or quit early.
 
 Note, we don't scrape from the table directly since Webscraper can't parse tables without a header row. Setting it to the first row doesn't work because it changes on every page.
 
-### 2. Convert data using scripts
+### 2. Convert data
 
-Run the script on the CSV.
+Run the scripts on the CSVs.
 
 First two arguments are mandatory, CSV source file and CSV target directory. Third argument is optional, audio target directory. Note, downloads audio only if third argument is given.
 
 ```sh
 mkdir -p out/serial-course/audio
-deno run --allow-read --allow-write --allow-net src/serial-course/main.ts serial-course.csv out/serial-course out/serial-course/audio
-```
-
-```sh
+deno run -RWN src/serial-course/main.ts serial-course.csv out/serial-course out/serial-course/audio
 mkdir -p out/vocabulary/audio
-deno run --allow-read --allow-write --allow-net src/vocabulary/main.ts vocabulary.csv out/vocabulary out/vocabulary/audio
-```
-
-```sh
+deno run -RWN src/vocabulary/main.ts vocabulary.csv out/vocabulary out/vocabulary/audio
 mkdir -p out/pronunciation/audio
-deno run --allow-read --allow-write --allow-net src/pronunciation/main.ts pronunciation.csv out/pronunciation out/pronunciation/audio
+deno run -RWN src/pronunciation/main.ts pronunciation.csv out/pronunciation out/pronunciation/audio
 ```
 
-Note, the target directory must already exist. Files that already exist are not overwritten. Audios that already exist aren't downloaded again.
+Note, the target directory must already exist. Files that already exist are not overwritten. Audio files that already exist aren't downloaded again.
 
 ### 3. Import data into Anki
 
@@ -58,7 +51,7 @@ Import CSV files into Anki and move the audio files into Anki's media directory.
 
 You can create subdecks for each type of content and lesson, e.g. `IC::Serial Course::A::Lesson 1`, `IC::Pronunciation::Lesson 1`, etc.
 
-You can create a new Card Type for each type of content (Serial Course, Vocabulary, Pronunciation). See [card-templates](card-templates) for an example that looks like IC and plays the fast audio on the front. Use it together with a new Deck Option that disables automatic audio playing. You can apply the Deck Option to all subdecks as well.
+You can create a new Card Type for each type of content (Serial Course, Vocabulary, Pronunciation). See [card-templates](card-templates) for an example that looks like Immersive Chinese and plays the fast audio on the front. Use it together with a new Deck Option that disables automatic audio playing. You can apply the Deck Option to all subdecks as well.
 
 Note, Anki falsely reports unused Media if the audio field contains only the filepath and the `[sound: ..]` directive is in the Card Template.
 
@@ -68,7 +61,7 @@ Note, if AnkiWeb is used then the MP4 files have to be converted to MP3 since MP
 
 ## Architecture
 
-The scraping relies on the fact that IC loads the data for an entire lesson and renders individual exercises only client-side.
+The scraping relies on the fact that Immersive Chinese loads the data for an entire lesson and renders individual exercises only client-side.
 
 The script downloading the audio relies on the fact that audio URLs are static and unprotected such that they can be fetched without authentication.
 
