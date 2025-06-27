@@ -9,9 +9,10 @@ import { join, parse as parsePath } from "@std/path";
 import { delay } from "@std/async";
 import { exists } from "@std/fs";
 import { downloadFile } from "../utilities.ts";
+import type { Data, Exercise, Pronunciation, Pronunciations } from "./types.ts";
 
 const DOWNLOAD_DELAY = 1000;
-const COLUMNS_INPUT = [
+export const COLUMNS_INPUT = [
   "web-scraper-order",
   "web-scraper-start-url",
   "lesson",
@@ -21,13 +22,13 @@ const COLUMNS_INPUT = [
   "audioFastUrl",
   "audioSlowUrl",
   "identifier",
-];
-const COLUMNS_OUTPUT = [
+] as const;
+export const COLUMNS_OUTPUT = [
   "identifier",
   "pinyin",
   "description",
   "audio",
-];
+] as const;
 
 const [SOURCE_CSV, TARGET_CSV_DIR, TARGET_AUDIO_DIR] = Deno.args;
 
@@ -48,7 +49,7 @@ if (TARGET_AUDIO_DIR) {
 /**
  * Load pronunciations from CSV
  */
-async function loadPronunciations(path) {
+async function loadPronunciations(path: string): Promise<Data> {
   log.info(`Loading pronunciations from '${path}'...`);
   const input = await Deno.readTextFile(path);
   const content = parseCsv(input, {
@@ -63,10 +64,10 @@ async function loadPronunciations(path) {
  * Returns object with pronunciations as values, pronunciation is object with name and array of exercises
  * Note, discard slow audio since duplicate of fast
  */
-function processPronunciations(parsed) {
+function processPronunciations(parsed: Data): Pronunciations {
   log.info(`Processing pronunciations...`);
 
-  const pronunciations = {};
+  const pronunciations: Pronunciations = {};
 
   parsed.forEach(
     (
@@ -103,7 +104,7 @@ function processPronunciations(parsed) {
         description = "";
       }
 
-      const exercise = {
+      const exercise: Exercise = {
         identifier,
         pinyin: pinyin.trim(),
         description: description.trim(),
@@ -112,7 +113,7 @@ function processPronunciations(parsed) {
 
       // create pronunciation on first encounter
       if (pronunciations[name] === undefined) {
-        pronunciations[name] = {};
+        pronunciations[name] = {} as Pronunciation;
         pronunciations[name].exercises = [];
       }
       pronunciations[name].name = name;
@@ -128,7 +129,9 @@ function processPronunciations(parsed) {
  * Skips files that already exist
  * Note, doesn't use header since Anki can't skip it
  */
-async function writePronunciations(pronunciations) {
+async function writePronunciations(
+  pronunciations: Pronunciations,
+): Promise<void> {
   log.info(`Writing pronunciations to '${TARGET_CSV_DIR}'...`);
 
   const promises = [];
@@ -158,7 +161,7 @@ async function writePronunciations(pronunciations) {
  * Download audio files
  * Skips files that already exist
  */
-async function downloadAudios(parsed) {
+async function downloadAudios(parsed: Data): Promise<void> {
   log.info(
     `Downloading audios into ${TARGET_AUDIO_DIR}... with ${
       DOWNLOAD_DELAY / 1000
@@ -167,7 +170,7 @@ async function downloadAudios(parsed) {
 
   for (const { audioFastUrl: audioUrl } of parsed) {
     log.info(`Downloading audio ${getAudioFileName(audioUrl)}...`);
-    let timeout;
+    let timeout: Promise<void> | undefined;
 
     const audioPath = join(
       TARGET_AUDIO_DIR,
@@ -192,7 +195,7 @@ async function downloadAudios(parsed) {
  * Get filename for audio from URL
  * Add "IC " to beginning
  */
-function getAudioFileName(url) {
+function getAudioFileName(url: string): string {
   const { base } = parsePath(url);
   const newBase = "IC " + base;
   log.debug(base, "->", newBase);
