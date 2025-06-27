@@ -4,20 +4,18 @@
  */
 
 import { log } from "../logger.ts";
-import { BufReader } from "https://deno.land/std@0.112.0/io/mod.ts";
-import {
-  parse as parseCsv,
-  stringify as stringifyCsv,
-} from "https://deno.land/std@0.112.0/encoding/csv.ts";
-import {
-  join,
-  parse as parsePath,
-} from "https://deno.land/std@0.112.0/path/mod.ts";
-import { delay, exists, fetchFile, writeFile } from "../utilities.ts";
+import { parse as parseCsv, stringify as stringifyCsv } from "@std/csv";
+import { join, parse as parsePath } from "@std/path";
+import { delay } from "@std/async";
+import { exists } from "@std/fs";
+import { downloadFile } from "../utilities.ts";
 
 const DOWNLOAD_DELAY = 1000;
 const COLUMNS_INPUT = [
+  "web-scraper-order",
+  "web-scraper-start-url",
   "lesson",
+  "lesson-href",
   "pinyin",
   "description",
   "audioFastUrl",
@@ -52,14 +50,11 @@ if (TARGET_AUDIO_DIR) {
  */
 async function loadPronunciations(path) {
   log.info(`Loading pronunciations from '${path}'...`);
-  const file = await Deno.open(path);
-  const input = new BufReader(file);
-  const content = await parseCsv(input, {
+  const input = await Deno.readTextFile(path);
+  const content = parseCsv(input, {
     skipFirstRow: true,
-    /* Throws `Error number of fields line:1`, maybe because other headers have hyphens? */
-    /* columns: COLUMNS_INPUT,*/
+    columns: COLUMNS_INPUT,
   });
-  Deno.close(file.rid);
   return content;
 }
 
@@ -142,7 +137,8 @@ async function writePronunciations(pronunciations) {
     log.info(`Writing pronunciation ${name}...`);
     const pronunciationPath = join(TARGET_CSV_DIR, name + ".csv");
 
-    const csvString = await stringifyCsv(exercises, COLUMNS_OUTPUT, {
+    const csvString = stringifyCsv(exercises, {
+      columns: COLUMNS_OUTPUT,
       headers: false,
     });
     if (await exists(pronunciationPath)) {
@@ -185,8 +181,7 @@ async function downloadAudios(parsed) {
     } else {
       log.debug(`Downloading audio.`);
       timeout = delay(DOWNLOAD_DELAY);
-      const blob = await fetchFile(audioUrl);
-      await writeFile(audioPath, blob);
+      await downloadFile(audioUrl, audioPath);
     }
 
     await timeout;

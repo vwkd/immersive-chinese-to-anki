@@ -1,18 +1,16 @@
 import { log } from "../logger.ts";
-import { BufReader } from "https://deno.land/std@0.112.0/io/mod.ts";
-import {
-  parse as parseCsv,
-  stringify as stringifyCsv,
-} from "https://deno.land/std@0.112.0/encoding/csv.ts";
-import {
-  join,
-  parse as parsePath,
-} from "https://deno.land/std@0.112.0/path/mod.ts";
-import { delay, exists, fetchFile, writeFile } from "../utilities.ts";
+import { parse as parseCsv, stringify as stringifyCsv } from "@std/csv";
+import { join, parse as parsePath } from "@std/path";
+import { delay } from "@std/async";
+import { exists } from "@std/fs";
+import { downloadFile } from "../utilities.ts";
 
 const DOWNLOAD_DELAY = 1000;
 const COLUMNS_INPUT = [
+  "web-scraper-order",
+  "web-scraper-start-url",
   "lesson",
+  "lesson-href",
   "pinyin",
   "simplified",
   "traditional",
@@ -54,14 +52,11 @@ if (TARGET_AUDIO_DIR) {
  */
 async function loadLessons(path: string): Promise<unknown[]> {
   log.info(`Loading lessons from '${path}'...`);
-  const file = await Deno.open(path);
-  const input = new BufReader(file);
-  const content = await parseCsv(input, {
+  const input = await Deno.readTextFile(path);
+  const content = parseCsv(input, {
     skipFirstRow: true,
-    /* Throws `Error number of fields line:1`, maybe because other headers have hyphens? */
-    /* columns: COLUMNS_INPUT,*/
+    columns: COLUMNS_INPUT,
   });
-  Deno.close(file.rid);
   return content;
 }
 
@@ -145,7 +140,8 @@ async function writeLessons(lessons) {
     log.info(`Writing lesson ${name}...`);
     const lessonPath = join(TARGET_CSV_DIR, name + ".csv");
 
-    const csvString = await stringifyCsv(exercises, COLUMNS_OUTPUT, {
+    const csvString = stringifyCsv(exercises, {
+      columns: COLUMNS_OUTPUT,
       headers: false,
     });
     if (await exists(lessonPath)) {
@@ -188,8 +184,7 @@ async function downloadAudios(parsed) {
     } else {
       log.debug(`Downloading fast audio.`);
       timeout = delay(DOWNLOAD_DELAY);
-      const blob = await fetchFile(audioFastUrl);
-      await writeFile(fastAudioPath, blob);
+      await downloadFile(audioFastUrl, fastAudioPath);
     }
 
     if (audioSlowUrl != audioFastUrl) {
@@ -205,8 +200,7 @@ async function downloadAudios(parsed) {
       } else {
         log.debug(`Downloading slow audio.`);
         if (!timeout) timeout = delay(DOWNLOAD_DELAY);
-        const blob = await fetchFile(audioSlowUrl);
-        await writeFile(slowAudioPath, blob);
+        await downloadFile(audioSlowUrl, slowAudioPath);
       }
     }
 
