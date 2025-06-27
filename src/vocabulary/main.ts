@@ -1,12 +1,7 @@
-import { log } from "../logger.ts";
-import { parse as parseCsv, stringify as stringifyCsv } from "@std/csv";
-import { join } from "@std/path";
-import { delay } from "@std/async";
-import { exists } from "@std/fs";
-import { downloadFile } from "../utilities.ts";
-import type { Data, Vocabulary } from "./types.ts";
+import { loadVocabulary, writeVocabulary } from "./csv.ts";
+import { processVocabulary } from "./process.ts";
+import { downloadAudios } from "./audio.ts";
 
-const DOWNLOAD_DELAY = 1000;
 export const COLUMNS_INPUT = [
   "web-scraper-order",
   "web-scraper-start-url",
@@ -37,117 +32,7 @@ if (!TARGET_CSV_DIR) {
 
 const parsed = await loadVocabulary(SOURCE_CSV);
 const vocabulary = processVocabulary(parsed);
-await writeVocabulary(vocabulary);
+await writeVocabulary(vocabulary, TARGET_CSV_DIR);
 if (TARGET_AUDIO_DIR) {
-  await downloadAudios(parsed);
-}
-
-/**
- * Load vocabulary from CSV
- */
-async function loadVocabulary(path: string): Promise<Data> {
-  log.info(`Loading vocabulary from '${path}'...`);
-  const input = await Deno.readTextFile(path);
-  const content = parseCsv(input, {
-    skipFirstRow: true,
-    columns: COLUMNS_INPUT,
-  });
-  return content;
-}
-
-/**
- * Process vocabulary
- * Returns object with vocabulary as values, vocabulary is object with name and array of exercises
- */
-function processVocabulary(parsed: Data): Vocabulary {
-  log.info(`Processing vocabulary...`);
-
-  return parsed.map(
-    (
-      {
-        identifier,
-        simplified,
-        traditional,
-        pinyin,
-        translation,
-      },
-    ) => ({
-      identifier: identifier.trim(),
-      simplified: simplified.trim(),
-      traditional: traditional.trim(),
-      pinyin: pinyin.trim(),
-      translation: translation.trim(),
-      audio: getAudioFileName(identifier),
-    }),
-  );
-}
-
-/**
- * Write processed vocabulary to CSV
- * Skips if file already exists
- * Note, doesn't use header since Anki can't skip it
- */
-async function writeVocabulary(vocabulary: Vocabulary): Promise<void> {
-  log.info(`Writing vocabulary to '${TARGET_CSV_DIR}'...`);
-
-  const vocabularyPath = join(TARGET_CSV_DIR, "vocabulary.csv");
-
-  const csvString = stringifyCsv(vocabulary, {
-    columns: COLUMNS_OUTPUT,
-    headers: false,
-  });
-
-  if (await exists(vocabularyPath)) {
-    log.debug(
-      `Skip writing vocabulary because already exists.`,
-    );
-  } else {
-    log.debug(`Write vocabulary.`);
-    await Deno.writeTextFile(vocabularyPath, csvString);
-  }
-}
-
-/**
- * Download audio files
- * Skips files that already exist
- */
-async function downloadAudios(parsed: Data): Promise<void> {
-  log.info(
-    `Downloading audios into ${TARGET_AUDIO_DIR}... with ${
-      DOWNLOAD_DELAY / 1000
-    } seconds delay`,
-  );
-
-  for (const { identifier } of parsed) {
-    log.info(`Downloading audio for ${identifier}...`);
-    let timeout: Promise<void> | undefined;
-
-    const audioPath = join(
-      TARGET_AUDIO_DIR,
-      getAudioFileName(identifier),
-    );
-
-    const audioUrl = `https://www.immersivechinese.com/vocab/${identifier}.mp4`;
-
-    if (await exists(audioPath)) {
-      log.debug(
-        `Skip downloading audio because already exists.`,
-      );
-    } else {
-      log.debug(`Downloading audio.`);
-      timeout = delay(DOWNLOAD_DELAY);
-      await downloadFile(audioUrl, audioPath);
-    }
-
-    await timeout;
-  }
-}
-
-/**
- * Get filename for audio from identifier
- * Add "IC " to beginning and ".mp4" to end
- */
-function getAudioFileName(identifier: string): string {
-  const newBase = "IC " + identifier + ".mp4";
-  return newBase;
+  await downloadAudios(parsed, TARGET_AUDIO_DIR);
 }
