@@ -31,6 +31,8 @@ export async function writePronunciations(
 ): Promise<void> {
   log.info(`Writing pronunciations to '${dir}'...`);
 
+  await Deno.mkdir(dir, { recursive: true });
+
   const promises = [];
 
   for (const { name, exercises } of Object.values(pronunciations)) {
