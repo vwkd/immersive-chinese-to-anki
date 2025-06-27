@@ -30,17 +30,17 @@ Note, we don't scrape from the table directly since Webscraper can't parse table
 
 ### 2. Convert data
 
-Run the scripts on the CSVs.
+Run the CLI app on the CSVs.
 
-First two arguments are mandatory, CSV source file and CSV target directory. Third argument is optional, audio target directory. Note, downloads audio only if third argument is given.
+Provide the optional audio target directory argument to also download audio.
 
 ```sh
 mkdir -p out/serial-course/audio
-deno task serial-course serial-course.csv out/serial-course out/serial-course/audio
+deno task run serial-course -d serial-course.csv -o out/serial-course -a out/serial-course/audio
 mkdir -p out/vocabulary/audio
-deno task vocabulary vocabulary.csv out/vocabulary out/vocabulary/audio
+deno task run vocabulary -d vocabulary.csv -o out/vocabulary -a out/vocabulary/audio
 mkdir -p out/pronunciation/audio
-deno task pronunciation pronunciation.csv out/pronunciation out/pronunciation/audio
+deno task run pronunciation -d pronunciation.csv -o out/pronunciation -a out/pronunciation/audio
 ```
 
 Note, the target directory must already exist. Files that already exist are not overwritten. Audio files that already exist aren't downloaded again.

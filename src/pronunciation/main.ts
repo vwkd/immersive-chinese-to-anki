@@ -1,12 +1,8 @@
-/**
- * Create Anki CSV and download audio for IC Pronunciation
- * Assumes slow audio is duplicate of fast, discards it
- */
-
-import { configure, getConsoleSink } from "@logtape/logtape";
+import { Command } from "@cliffy/command";
 import { loadPronunciations, writePronunciations } from "./csv.ts";
 import { processPronunciations } from "./process.ts";
 import { downloadAudios } from "./audio.ts";
+import type { Options } from "../types.ts";
 
 export const COLUMNS_INPUT = [
   "web-scraper-order",
@@ -26,32 +22,35 @@ export const COLUMNS_OUTPUT = [
   "audio",
 ] as const;
 
-const [SOURCE_CSV, TARGET_CSV_DIR, TARGET_AUDIO_DIR] = Deno.args;
+/**
+ * Create Anki CSV and download audio for IC Pronunciation
+ * Assumes slow audio is duplicate of fast, discards it
+ */
+async function createPronunciations(
+  { data, out, audio }: Options,
+): Promise<void> {
+  if (!data) {
+    throw new Error("No source file specified");
+  }
 
-if (!SOURCE_CSV) {
-  throw new Error("No source file specified");
-}
-if (!TARGET_CSV_DIR) {
-  throw new Error("No target directory specified");
+  if (!out) {
+    throw new Error("No target directory specified");
+  }
+
+  const parsed = await loadPronunciations(data);
+
+  const lessons = processPronunciations(parsed);
+
+  await writePronunciations(lessons, out);
+
+  if (audio) {
+    await downloadAudios(parsed, audio);
+  }
 }
 
-await configure({
-  sinks: {
-    console: getConsoleSink(),
-  },
-  loggers: [
-    {
-      category: ["ic-to-anki", "pronunciation"],
-      lowestLevel: "info",
-      sinks: ["console"],
-    },
-    { category: ["logtape", "meta"], sinks: [] },
-  ],
-});
-
-const parsed = await loadPronunciations(SOURCE_CSV);
-const pronunciations = processPronunciations(parsed);
-await writePronunciations(pronunciations, TARGET_CSV_DIR);
-if (TARGET_AUDIO_DIR) {
-  await downloadAudios(parsed, TARGET_AUDIO_DIR);
-}
+export default new Command()
+  .description("Create pronunciations")
+  .option("-d, --data <path:file>", "CSV source file", { required: true })
+  .option("-o, --out <path:file>", "CSV target directory", { required: true })
+  .option("-a, --audio <path:file>", "Audio target directory")
+  .action(createPronunciations);

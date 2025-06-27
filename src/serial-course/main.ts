@@ -1,7 +1,8 @@
-import { configure, getConsoleSink } from "@logtape/logtape";
+import { Command } from "@cliffy/command";
 import { loadLessons, writeLessons } from "./csv.ts";
 import { processLessons } from "./process.ts";
 import { downloadAudios } from "./audio.ts";
+import type { Options } from "../types.ts";
 
 export const COLUMNS_INPUT = [
   "web-scraper-order",
@@ -28,32 +29,37 @@ export const COLUMNS_OUTPUT = [
   "audioSlow",
 ] as const;
 
-const [SOURCE_CSV, TARGET_CSV_DIR, TARGET_AUDIO_DIR] = Deno.args;
+async function createLessons(
+  { data, out, audio }: Options,
+): Promise<void> {
+  if (!data) {
+    throw new Error("No source file specified");
+  }
 
-if (!SOURCE_CSV) {
-  throw new Error("No source file specified");
-}
-if (!TARGET_CSV_DIR) {
-  throw new Error("No target directory specified");
+  if (!out) {
+    throw new Error("No target directory specified");
+  }
+
+  const parsed = await loadLessons(data);
+
+  const lessons = processLessons(parsed);
+
+  await writeLessons(lessons, out);
+
+  if (audio) {
+    await downloadAudios(parsed, audio);
+  }
 }
 
-await configure({
-  sinks: {
-    console: getConsoleSink(),
-  },
-  loggers: [
-    {
-      category: ["ic-to-anki", "serial-course"],
-      lowestLevel: "info",
-      sinks: ["console"],
-    },
-    { category: ["logtape", "meta"], sinks: [] },
-  ],
-});
-
-const parsed = await loadLessons(SOURCE_CSV);
-const lessons = processLessons(parsed);
-await writeLessons(lessons, TARGET_CSV_DIR);
-if (TARGET_AUDIO_DIR) {
-  await downloadAudios(parsed, TARGET_AUDIO_DIR);
-}
+export default new Command()
+  .description("Create lessons")
+  .option("-d, --data <path:file>", "CSV source file", {
+    required: true,
+  })
+  .option(
+    "-o, --out <path:file>",
+    "CSV target directory",
+    { required: true },
+  )
+  .option("-a, --audio <path:file>", "Audio target directory")
+  .action(createLessons);
