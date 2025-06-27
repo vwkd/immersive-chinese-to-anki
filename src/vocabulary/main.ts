@@ -1,3 +1,4 @@
+import { configure, getConsoleSink } from "@logtape/logtape";
 import { loadVocabulary, writeVocabulary } from "./csv.ts";
 import { processVocabulary } from "./process.ts";
 import { downloadAudios } from "./audio.ts";
@@ -29,6 +30,20 @@ if (!SOURCE_CSV) {
 if (!TARGET_CSV_DIR) {
   throw new Error("No target directory specified");
 }
+
+await configure({
+  sinks: {
+    console: getConsoleSink(),
+  },
+  loggers: [
+    {
+      category: ["ic-to-anki", "vocabulary"],
+      lowestLevel: "info",
+      sinks: ["console"],
+    },
+    { category: ["logtape", "meta"], sinks: [] },
+  ],
+});
 
 const parsed = await loadVocabulary(SOURCE_CSV);
 const vocabulary = processVocabulary(parsed);

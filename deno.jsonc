@@ -5,6 +5,7 @@
     "vocabulary": "deno run -RWN src/vocabulary/main.ts"
   },
   "imports": {
+    "@logtape/logtape": "jsr:@logtape/logtape@^1.0.0",
     "@std/async": "jsr:@std/async@^1.0.13",
     "@std/csv": "jsr:@std/csv@^1.0.6",
     "@std/fs": "jsr:@std/fs@^1.0.18",

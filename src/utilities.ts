@@ -1,7 +1,9 @@
-import { log } from "./logger.ts";
+import { getLogger } from "@logtape/logtape";
+
+const log = getLogger(["ic-to-anki", "utilities"]);
 
 export async function downloadFile(url: string, path: string): Promise<void> {
-  log.debug("Fetching", url);
+  log.debug(`Fetching ${url}`);
 
   const res = await fetch(url);
 

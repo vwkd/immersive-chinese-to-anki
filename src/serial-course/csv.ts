@@ -1,9 +1,11 @@
-import { log } from "../logger.ts";
+import { getLogger } from "@logtape/logtape";
 import { join } from "@std/path/join";
 import { exists } from "@std/fs/exists";
 import { parse as parseCsv, stringify as stringifyCsv } from "@std/csv";
 import { COLUMNS_INPUT, COLUMNS_OUTPUT } from "./main.ts";
 import type { Data, Lessons } from "./types.ts";
+
+const log = getLogger(["ic-to-anki", "serial-course", "csv"]);
 
 /**
  * Load lessons from CSV
