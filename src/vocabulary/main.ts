@@ -4,9 +4,10 @@ import { join } from "@std/path";
 import { delay } from "@std/async";
 import { exists } from "@std/fs";
 import { downloadFile } from "../utilities.ts";
+import type { Data, Vocabulary } from "./types.ts";
 
 const DOWNLOAD_DELAY = 1000;
-const COLUMNS_INPUT = [
+export const COLUMNS_INPUT = [
   "web-scraper-order",
   "web-scraper-start-url",
   "identifier",
@@ -15,15 +16,15 @@ const COLUMNS_INPUT = [
   "traditional",
   "pinyin",
   "translation",
-];
-const COLUMNS_OUTPUT = [
+] as const;
+export const COLUMNS_OUTPUT = [
   "identifier",
   "simplified",
   "traditional",
   "pinyin",
   "translation",
   "audio",
-];
+] as const;
 
 const [SOURCE_CSV, TARGET_CSV_DIR, TARGET_AUDIO_DIR] = Deno.args;
 
@@ -44,7 +45,7 @@ if (TARGET_AUDIO_DIR) {
 /**
  * Load vocabulary from CSV
  */
-async function loadVocabulary(path) {
+async function loadVocabulary(path: string): Promise<Data> {
   log.info(`Loading vocabulary from '${path}'...`);
   const input = await Deno.readTextFile(path);
   const content = parseCsv(input, {
@@ -58,7 +59,7 @@ async function loadVocabulary(path) {
  * Process vocabulary
  * Returns object with vocabulary as values, vocabulary is object with name and array of exercises
  */
-function processVocabulary(parsed) {
+function processVocabulary(parsed: Data): Vocabulary {
   log.info(`Processing vocabulary...`);
 
   return parsed.map(
@@ -86,7 +87,7 @@ function processVocabulary(parsed) {
  * Skips if file already exists
  * Note, doesn't use header since Anki can't skip it
  */
-async function writeVocabulary(vocabulary) {
+async function writeVocabulary(vocabulary: Vocabulary): Promise<void> {
   log.info(`Writing vocabulary to '${TARGET_CSV_DIR}'...`);
 
   const vocabularyPath = join(TARGET_CSV_DIR, "vocabulary.csv");
@@ -110,7 +111,7 @@ async function writeVocabulary(vocabulary) {
  * Download audio files
  * Skips files that already exist
  */
-async function downloadAudios(parsed) {
+async function downloadAudios(parsed: Data): Promise<void> {
   log.info(
     `Downloading audios into ${TARGET_AUDIO_DIR}... with ${
       DOWNLOAD_DELAY / 1000
@@ -119,7 +120,7 @@ async function downloadAudios(parsed) {
 
   for (const { identifier } of parsed) {
     log.info(`Downloading audio for ${identifier}...`);
-    let timeout;
+    let timeout: Promise<void> | undefined;
 
     const audioPath = join(
       TARGET_AUDIO_DIR,
@@ -146,7 +147,7 @@ async function downloadAudios(parsed) {
  * Get filename for audio from identifier
  * Add "IC " to beginning and ".mp4" to end
  */
-function getAudioFileName(identifier) {
+function getAudioFileName(identifier: string): string {
   const newBase = "IC " + identifier + ".mp4";
   return newBase;
 }

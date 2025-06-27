@@ -4,9 +4,10 @@ import { join, parse as parsePath } from "@std/path";
 import { delay } from "@std/async";
 import { exists } from "@std/fs";
 import { downloadFile } from "../utilities.ts";
+import type { Data, Exercise, Lesson, Lessons } from "./types.ts";
 
 const DOWNLOAD_DELAY = 1000;
-const COLUMNS_INPUT = [
+export const COLUMNS_INPUT = [
   "web-scraper-order",
   "web-scraper-start-url",
   "lesson",
@@ -19,8 +20,8 @@ const COLUMNS_INPUT = [
   "audioFastUrl",
   "audioSlowUrl",
   "identifier",
-];
-const COLUMNS_OUTPUT = [
+] as const;
+export const COLUMNS_OUTPUT = [
   "identifier",
   "simplified",
   "traditional",
@@ -29,7 +30,7 @@ const COLUMNS_OUTPUT = [
   "note",
   "audioFast",
   "audioSlow",
-];
+] as const;
 
 const [SOURCE_CSV, TARGET_CSV_DIR, TARGET_AUDIO_DIR] = Deno.args;
 
@@ -50,7 +51,7 @@ if (TARGET_AUDIO_DIR) {
 /**
  * Load lessons from CSV
  */
-async function loadLessons(path: string): Promise<unknown[]> {
+async function loadLessons(path: string): Promise<Data> {
   log.info(`Loading lessons from '${path}'...`);
   const input = await Deno.readTextFile(path);
   const content = parseCsv(input, {
@@ -66,10 +67,10 @@ async function loadLessons(path: string): Promise<unknown[]> {
  * Note, slow audio is duplicate of fast if not available
  * Note, lessons can have more or less than 25 exercises
  */
-function processLessons(parsed) {
+function processLessons(parsed: Data): Lessons {
   log.info(`Processing lessons...`);
 
-  const lessons = {};
+  const lessons: Lessons = {};
 
   parsed.forEach(
     (
@@ -102,7 +103,7 @@ function processLessons(parsed) {
         note = "";
       }
 
-      const exercise = {
+      const exercise: Exercise = {
         identifier: identifier.trim(),
         pinyin: pinyin.trim(),
         simplified: simplified.trim(),
@@ -115,7 +116,7 @@ function processLessons(parsed) {
 
       // create lesson on first encounter
       if (lessons[name] === undefined) {
-        lessons[name] = {};
+        lessons[name] = {} as Lesson;
         lessons[name].exercises = [];
       }
       lessons[name].name = name;
@@ -131,7 +132,7 @@ function processLessons(parsed) {
  * Skips files that already exist
  * Note, doesn't use header since Anki can't skip it
  */
-async function writeLessons(lessons) {
+async function writeLessons(lessons: Lessons): Promise<void> {
   log.info(`Writing lessons to '${TARGET_CSV_DIR}'...`);
 
   const promises = [];
@@ -161,7 +162,7 @@ async function writeLessons(lessons) {
  * Download audio files
  * Skips files that already exist
  */
-async function downloadAudios(parsed) {
+async function downloadAudios(parsed: Data): Promise<void> {
   log.info(
     `Downloading audios into ${TARGET_AUDIO_DIR}... with ${
       DOWNLOAD_DELAY / 1000
@@ -170,7 +171,7 @@ async function downloadAudios(parsed) {
 
   for (const { audioFastUrl, audioSlowUrl, identifier } of parsed) {
     log.info(`Downloading audio for ${identifier}...`);
-    let timeout;
+    let timeout: Promise<void> | undefined;
 
     const fastAudioPath = join(
       TARGET_AUDIO_DIR,
@@ -212,7 +213,7 @@ async function downloadAudios(parsed) {
  * Get filename for fast audio from URL
  * Add "IC " to beginning
  */
-function getFastAudioFileName(url) {
+function getFastAudioFileName(url: string): string {
   const { base } = parsePath(url);
   const newBase = "IC " + base;
   log.debug(base, "->", newBase);
@@ -223,7 +224,7 @@ function getFastAudioFileName(url) {
  * Get filename for slow audio from URL
  * Add "IC " to beginning, move "Slow" to end
  */
-function getSlowAudioFileName(url) {
+function getSlowAudioFileName(url: string): string {
   const { base, name, ext } = parsePath(url);
   const regex = /^(.+) (Slow)(.+)$/;
   const matches = name.match(regex);
