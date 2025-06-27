@@ -1,0 +1,13 @@
+{
+  "tasks": {
+    "pronunciation": "deno run -RWN src/pronunciation/main.ts",
+    "serial-course": "deno run -RWN src/serial-course/main.ts",
+    "vocabulary": "deno run -RWN src/vocabulary/main.ts"
+  },
+  "imports": {
+    "@std/async": "jsr:@std/async@^1.0.13",
+    "@std/csv": "jsr:@std/csv@^1.0.6",
+    "@std/fs": "jsr:@std/fs@^1.0.18",
+    "@std/path": "jsr:@std/path@^1.1.0"
+  }
+}

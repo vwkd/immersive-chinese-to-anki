@@ -36,11 +36,11 @@ First two arguments are mandatory, CSV source file and CSV target directory. Thi
 
 ```sh
 mkdir -p out/serial-course/audio
-deno run -RWN src/serial-course/main.ts serial-course.csv out/serial-course out/serial-course/audio
+deno task serial-course serial-course.csv out/serial-course out/serial-course/audio
 mkdir -p out/vocabulary/audio
-deno run -RWN src/vocabulary/main.ts vocabulary.csv out/vocabulary out/vocabulary/audio
+deno task vocabulary vocabulary.csv out/vocabulary out/vocabulary/audio
 mkdir -p out/pronunciation/audio
-deno run -RWN src/pronunciation/main.ts pronunciation.csv out/pronunciation out/pronunciation/audio
+deno task pronunciation pronunciation.csv out/pronunciation out/pronunciation/audio
 ```
 
 Note, the target directory must already exist. Files that already exist are not overwritten. Audio files that already exist aren't downloaded again.
