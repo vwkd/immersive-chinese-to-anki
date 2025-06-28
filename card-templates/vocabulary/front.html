@@ -1,0 +1,28 @@
+<div class="wrapper">
+
+<div class="id">{{ID}}</div>
+
+<div class="box content">
+  <div class="pinyin">{{Pinyin}}</div>
+  <hr>
+  <div class="hanzi">{{Traditional}}</div>
+  <hr>
+  <div>{{English}}</div>
+</div>
+
+<div class="audio">[sound:{{Audio}}]</div>
+
+</div>
+
+<script>
+// autoplay audio, only on front template
+
+// desktop
+var anchor = document.querySelector(".audio .replay-button");
+if (anchor) { anchor.click(); }
+
+// browser
+// note, doesn't work if autoplay is blocked like in Safari
+var audio = document.querySelector(".audio audio");
+if (audio) { audio.play(); }
+</script>
