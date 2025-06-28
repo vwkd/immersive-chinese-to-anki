@@ -7,6 +7,18 @@ import {
 } from "./utils.ts";
 import { Deck, Decks, Note, Table } from "../types.ts";
 
+const CHAPTERS = {
+  "absolute-beginner": "1",
+  "early-beginner": "2",
+  "mid-level-beginner": "3",
+  "upper-beginner": "4",
+  "advanced-beginner": "5",
+  "basic-intermediate": "6",
+  "lower-intermediate": "7",
+  "intermediate": "8",
+  "extra-stories": "99",
+};
+
 const log = getLogger(["ic-to-anki", "serial-course", "process"]);
 
 /**
@@ -30,6 +42,7 @@ export function processLessons(
       {
         identifier,
         lesson,
+        "lesson-href": href,
         pinyin,
         simplified,
         traditional,
@@ -39,9 +52,13 @@ export function processLessons(
         audioSlowUrl,
       },
     ) => {
+      const r1 = new RegExp(Object.keys(CHAPTERS).join("|"));
+      const chapterString = href.trim().match(r1)[0];
+      const chapter = CHAPTERS[chapterString];
+
       // get name without pinyin words
       const regex = /^(.+)\n/;
-      const name = lesson.trim().match(regex)[1];
+      const name = `Chapter ${chapter} ${lesson.trim().match(regex)[1]}`;
 
       const audioFast = getFastAudioFileName(audioFastUrl);
       const audioFastMale = getFastMaleAudioFileName(audioFastUrl);
