@@ -46,7 +46,7 @@ Note: Files that already exist are not overwritten. Audio files that already exi
 
 Import CSV files into Anki and move the audio files into Anki's media directory. Make sure to select the right Card Type, the right Deck, and confirm that the Field Mapping is correct. This will be the most laborious task for multiple CSV files.
 
-You can create subdecks for each type of content and lesson, e.g. `IC::Serial Course::A::Lesson 1`, `IC::Pronunciation::Lesson 1`, etc.
+You can create subdecks for each type of content and lesson, e.g. `IC::Serial Course::Chapter 1::Lesson 1`, `IC::Pronunciation::Lesson 1`, etc.
 
 You can create a new Card Type for each type of content (Serial Course, Vocabulary, Pronunciation). See [card-templates](card-templates) for an example that looks like Immersive Chinese and plays the fast audio on the front. Use it together with a new Deck Option that disables automatic audio playing. You can apply the Deck Option to all subdecks as well.
 
