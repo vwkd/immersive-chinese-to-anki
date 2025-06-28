@@ -1,12 +1,11 @@
 import { getLogger } from "@logtape/logtape";
-import { COLUMNS_INPUT } from "./main.ts";
+import { COLUMNS_INPUT, COLUMNS_OUTPUT } from "./main.ts";
 import {
   getFastAudioFileName,
   getFastMaleAudioFileName,
   getSlowAudioFileName,
 } from "./utils.ts";
-import { Table } from "../types.ts";
-import type { Exercise, Lesson, Lessons } from "./types.ts";
+import { Deck, Decks, Note, Table } from "../types.ts";
 
 const log = getLogger(["ic-to-anki", "serial-course", "process"]);
 
@@ -16,10 +15,12 @@ const log = getLogger(["ic-to-anki", "serial-course", "process"]);
  * Note, slow audio is duplicate of fast if not available
  * Note, lessons can have more or less than 25 exercises
  */
-export function processLessons(parsed: Table<typeof COLUMNS_INPUT>): Lessons {
+export function processLessons(
+  parsed: Table<typeof COLUMNS_INPUT>,
+): Decks<typeof COLUMNS_OUTPUT> {
   log.info(`Processing lessons...`);
 
-  const lessons: Lessons = {};
+  const lessons: Decks<typeof COLUMNS_OUTPUT> = {};
 
   parsed.forEach(
     (
@@ -53,7 +54,7 @@ export function processLessons(parsed: Table<typeof COLUMNS_INPUT>): Lessons {
         note = "";
       }
 
-      const exercise: Exercise = {
+      const exercise: Note<typeof COLUMNS_OUTPUT> = {
         identifier: identifier.trim(),
         pinyin: pinyin.trim(),
         simplified: simplified.trim(),
@@ -67,11 +68,11 @@ export function processLessons(parsed: Table<typeof COLUMNS_INPUT>): Lessons {
 
       // create lesson on first encounter
       if (lessons[name] === undefined) {
-        lessons[name] = {} as Lesson;
-        lessons[name].exercises = [];
+        lessons[name] = {} as Deck<typeof COLUMNS_OUTPUT>;
+        lessons[name].notes = [];
       }
       lessons[name].name = name;
-      lessons[name].exercises.push(exercise);
+      lessons[name].notes.push(exercise);
     },
   );
 

@@ -2,7 +2,7 @@ import { getLogger } from "@logtape/logtape";
 import { join } from "@std/path/join";
 import { writeCsv } from "../csv.ts";
 import { COLUMNS_OUTPUT } from "./main.ts";
-import type { Pronunciations } from "./types.ts";
+import type { Decks } from "../types.ts";
 
 const log = getLogger(["ic-to-anki", "pronunciation", "csv"]);
 
@@ -12,7 +12,7 @@ const log = getLogger(["ic-to-anki", "pronunciation", "csv"]);
  * Note, doesn't use header since Anki can't skip it
  */
 export async function writePronunciations(
-  pronunciations: Pronunciations,
+  pronunciations: Decks<typeof COLUMNS_OUTPUT>,
   dir: string,
 ): Promise<void> {
   log.info(`Writing pronunciations to '${dir}'...`);
@@ -21,10 +21,10 @@ export async function writePronunciations(
 
   const promises = [];
 
-  for (const { name, exercises } of Object.values(pronunciations)) {
+  for (const { name, notes } of Object.values(pronunciations)) {
     const pronunciationPath = join(dir, name + ".csv");
 
-    promises.push(writeCsv(pronunciationPath, exercises, COLUMNS_OUTPUT));
+    promises.push(writeCsv(pronunciationPath, notes, COLUMNS_OUTPUT));
   }
 
   await Promise.all(promises);
