@@ -1,0 +1,89 @@
+/* light mode (default) */
+
+.card {
+  background-color: #eaf0f4;
+  color: #215c70;
+  font-family: "Helvetica Neue";
+  padding: 1rem;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  /* not supported on desktop */
+  /* gap: 1rem; */
+}
+
+.id {
+  text-align: center;
+  font-size: small;
+  color: grey;
+  margin-bottom: 1rem;
+}
+
+.box {
+  background-color: white;
+  margin-bottom: 1rem;
+}
+
+.content {
+  font-weight: 500;
+  padding: 1rem;
+  border-radius: 0.6rem;
+}
+
+.hanzi {
+}
+
+.pinyin {
+}
+
+.header {
+  margin-bottom: 1rem;
+}
+
+.header span {
+  background-color: #46b4dd;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px 10px;
+  color: white;
+}
+
+.note {
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+  /* font-weight: 300; */
+}
+
+.audio {
+  display: flex;
+  align-items: center;
+  /* can't center the big blue button because in browser uses audio element */
+  justify-content: center;
+}
+
+/* audio on desktop */
+.audio .replay-button svg circle {
+  fill: #46b4dd;
+  stroke: #46b4dd;
+}
+
+.audio .replay-button svg path {
+  fill: white;
+}
+
+.audio .fast .replay-button svg {
+  width: 100px;
+  height: 100px;
+}
+
+/* dark mode */
+
+.nightMode.card {
+  background-color: black;
+  color: white;
+}
+
+.nightMode .box {
+  background-color: #1c1c1e;
+}

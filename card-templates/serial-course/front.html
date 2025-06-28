@@ -1,0 +1,40 @@
+<div class="wrapper">
+
+<div class="id">{{ID}}</div>
+
+<div class="box content">
+  <div class="pinyin">{{Pinyin}}</div>
+  <hr>
+  <div class="hanzi">{{Traditional}}</div>
+  <hr>
+  <div>{{English}}</div>
+</div>
+
+{{#Note}}
+<div class="header">
+<span>note</span>
+</div>
+
+<div class="box note">{{Note}}</div>
+{{/Note}}
+
+<div class="audio">
+<span class="fast">[sound:{{Audio}}]</span>
+<span class="fast2">[sound:{{Audio 2}}]</span>
+<span class="slow">[sound:{{Audio slow}}]</span>
+</div>
+
+</div>
+
+<script>
+// autoplay fast audio, only on front template
+
+// desktop
+var anchor = document.querySelector(".fast .replay-button");
+if (anchor) { anchor.click(); }
+
+// browser
+// note, doesn't work if autoplay is blocked like in Safari
+var audio = document.querySelector(".fast audio");
+if (audio) { audio.play(); }
+</script>
