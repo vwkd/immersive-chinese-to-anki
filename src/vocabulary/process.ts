@@ -1,6 +1,8 @@
 import { getLogger } from "@logtape/logtape";
+import { COLUMNS_INPUT } from "./main.ts";
 import { getAudioFileName } from "./utils.ts";
-import type { Data, Vocabulary } from "./types.ts";
+import { Table } from "../types.ts";
+import type { Vocabulary } from "./types.ts";
 
 const log = getLogger(["ic-to-anki", "vocabulary", "process"]);
 
@@ -8,7 +10,9 @@ const log = getLogger(["ic-to-anki", "vocabulary", "process"]);
  * Process vocabulary
  * Returns object with vocabulary as values, vocabulary is object with name and array of exercises
  */
-export function processVocabulary(parsed: Data): Vocabulary {
+export function processVocabulary(
+  parsed: Table<typeof COLUMNS_INPUT>,
+): Vocabulary {
   log.info(`Processing vocabulary...`);
 
   return parsed.map(

@@ -1,5 +1,6 @@
 import { Command } from "@cliffy/command";
-import { loadLessons, writeLessons } from "./csv.ts";
+import { loadCsv } from "../csv.ts";
+import { writeLessons } from "./csv.ts";
 import { processLessons } from "./process.ts";
 import { downloadAudios } from "./audio.ts";
 import type { Options } from "../types.ts";
@@ -42,7 +43,7 @@ async function createLessons(
     throw new Error("No target directory specified");
   }
 
-  const parsed = await loadLessons(data);
+  const parsed = await loadCsv(data, COLUMNS_INPUT);
 
   const lessons = processLessons(parsed);
 

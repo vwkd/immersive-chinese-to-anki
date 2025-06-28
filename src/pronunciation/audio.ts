@@ -3,8 +3,9 @@ import { join } from "@std/path/join";
 import { exists } from "@std/fs/exists";
 import { delay } from "@std/async/delay";
 import { downloadFile } from "../utilities.ts";
+import { COLUMNS_INPUT } from "./main.ts";
 import { getAudioFileName } from "./utils.ts";
-import type { Data } from "./types.ts";
+import type { Table } from "../types.ts";
 
 const DOWNLOAD_DELAY = 1000;
 
@@ -14,7 +15,10 @@ const log = getLogger(["ic-to-anki", "pronunciation", "audio"]);
  * Download audio files
  * Skips files that already exist
  */
-export async function downloadAudios(parsed: Data, dir: string): Promise<void> {
+export async function downloadAudios(
+  parsed: Table<typeof COLUMNS_INPUT>,
+  dir: string,
+): Promise<void> {
   log.info(
     `Downloading audios into ${dir}... with ${
       DOWNLOAD_DELAY / 1000

@@ -1,6 +1,4 @@
-import { COLUMNS_INPUT, COLUMNS_OUTPUT } from "./main.ts";
-
-export type Data = Record<typeof COLUMNS_INPUT[number], string>[];
+import { COLUMNS_OUTPUT } from "./main.ts";
 
 export type Exercise = Record<typeof COLUMNS_OUTPUT[number], string>;
 

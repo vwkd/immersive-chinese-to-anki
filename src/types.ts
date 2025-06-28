@@ -15,3 +15,11 @@ export interface Options {
    */
   audio?: string;
 }
+
+/**
+ * Table of CSV
+ */
+export type Table<Columns extends readonly string[]> = Record<
+  Columns[number],
+  string
+>[];
