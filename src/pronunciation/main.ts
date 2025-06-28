@@ -24,8 +24,11 @@ export const COLUMNS_OUTPUT = [
 ] as const;
 
 /**
- * Create Anki CSV and download audio for IC Pronunciation
- * Assumes slow audio is duplicate of fast, discards it
+ * Create pronunciation decks and download audio
+ *
+ * - note: assumes slow audio is duplicate of fast, discards it
+ *
+ * @param options command line options
  */
 async function createPronunciations(
   { data, out, audio }: Options,

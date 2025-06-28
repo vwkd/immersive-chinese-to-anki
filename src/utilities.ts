@@ -2,6 +2,12 @@ import { getLogger } from "@logtape/logtape";
 
 const log = getLogger(["ic-to-anki", "utilities"]);
 
+/**
+ * Download file and save it
+ *
+ * @param url URL of file
+ * @param path path for file
+ */
 export async function downloadFile(url: string, path: string): Promise<void> {
   log.debug(`Fetching ${url}`);
 

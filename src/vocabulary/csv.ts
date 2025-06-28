@@ -7,9 +7,10 @@ import { Note } from "../types.ts";
 const log = getLogger(["ic-to-anki", "vocabulary", "csv"]);
 
 /**
- * Write processed vocabulary to CSV
- * Skips if file already exists
- * Note, doesn't use header since Anki can't skip it
+ * Write vocabulary to CSV
+ *
+ * @param vocabulary vocabulary deck
+ * @param dir directory to write CSV to
  */
 export async function writeVocabulary(
   vocabulary: Note<typeof COLUMNS_OUTPUT>[],

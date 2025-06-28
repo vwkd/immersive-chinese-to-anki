@@ -4,8 +4,12 @@ import { parse as parsePath } from "@std/path";
 const log = getLogger(["ic-to-anki", "serial-course", "utils"]);
 
 /**
- * Get filename for fast audio from URL
- * Add "IC " to beginning
+ * Get filename for fast audio
+ *
+ * - adds "IC " to beginning
+ *
+ * @param url URL of fast audio
+ * @returns filename of fast audio
  */
 export function getFastAudioFileName(url: string): string {
   const { base } = parsePath(url);
@@ -15,8 +19,12 @@ export function getFastAudioFileName(url: string): string {
 }
 
 /**
- * Get filename for fast male audio from fast audio filename
- * Add "IC " to beginning and "Male" to end
+ * Get filename for fast male audio
+ *
+ * - adds "IC " to beginning and "Male" to end
+ *
+ * @param url URL of fast audio
+ * @returns filename of fast male audio
  */
 export function getFastMaleAudioFileName(url: string): string {
   const { name } = parsePath(url);
@@ -26,8 +34,12 @@ export function getFastMaleAudioFileName(url: string): string {
 }
 
 /**
- * Get filename for slow audio from URL
- * Add "IC " to beginning, move "Slow" to end
+ * Get filename for slow audio
+ *
+ * - adds "IC " to beginning, move "Slow" to end
+ *
+ * @param url URL of slow audio
+ * @returns filename of slow audio
  */
 export function getSlowAudioFileName(url: string): string {
   const { base, name, ext } = parsePath(url);

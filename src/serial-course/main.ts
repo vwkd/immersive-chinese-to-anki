@@ -32,6 +32,11 @@ export const COLUMNS_OUTPUT = [
   "audioSlow",
 ] as const;
 
+/**
+ * Create lesson decks and download audio
+ *
+ * @param options command line options
+ */
 async function createLessons(
   { data, out, audio }: Options,
 ): Promise<void> {

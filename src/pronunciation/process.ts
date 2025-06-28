@@ -7,8 +7,11 @@ const log = getLogger(["ic-to-anki", "pronunciation", "process"]);
 
 /**
  * Process pronunciations
- * Returns object with pronunciations as values, pronunciation is object with name and array of exercises
- * Note, discard slow audio since duplicate of fast
+ *
+ * - note: discard slow audio since duplicate of fast
+ *
+ * @param parsed data from CSV
+ * @returns pronunciation decks
  */
 export function processPronunciations(
   parsed: Table<typeof COLUMNS_INPUT>,

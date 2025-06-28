@@ -7,7 +7,9 @@ const log = getLogger(["ic-to-anki", "vocabulary", "process"]);
 
 /**
  * Process vocabulary
- * Returns object with vocabulary as values, vocabulary is object with name and array of exercises
+ *
+ * @param parsed data from CSV
+ * @returns vocabulary deck
  */
 export function processVocabulary(
   parsed: Table<typeof COLUMNS_INPUT>,
