@@ -1,13 +1,9 @@
 import { getLogger } from "@logtape/logtape";
 import { join } from "@std/path/join";
-import { exists } from "@std/fs/exists";
-import { delay } from "@std/async/delay";
-import { downloadFile } from "../utilities.ts";
+import { downloadAudio } from "../audio.ts";
 import { COLUMNS_INPUT } from "./main.ts";
 import { getAudioFileName } from "./utils.ts";
 import type { Table } from "../types.ts";
-
-const DOWNLOAD_DELAY = 1000;
 
 const log = getLogger(["ic-to-anki", "pronunciation", "audio"]);
 
@@ -19,33 +15,13 @@ export async function downloadAudios(
   parsed: Table<typeof COLUMNS_INPUT>,
   dir: string,
 ): Promise<void> {
-  log.info(
-    `Downloading audios into ${dir}... with ${
-      DOWNLOAD_DELAY / 1000
-    } seconds delay`,
-  );
+  log.info(`Downloading audios into ${dir}`);
 
   await Deno.mkdir(dir, { recursive: true });
 
-  for (const { audioFastUrl: audioUrl } of parsed) {
-    log.info(`Downloading audio ${getAudioFileName(audioUrl)}...`);
-    let timeout: Promise<void> | undefined;
+  for (const { audioFastUrl } of parsed) {
+    const audioFastPath = join(dir, getAudioFileName(audioFastUrl));
 
-    const audioPath = join(
-      dir,
-      getAudioFileName(audioUrl),
-    );
-
-    if (await exists(audioPath)) {
-      log.debug(
-        `Skip downloading audio because already exists.`,
-      );
-    } else {
-      log.debug(`Downloading audio.`);
-      timeout = delay(DOWNLOAD_DELAY);
-      await downloadFile(audioUrl, audioPath);
-    }
-
-    await timeout;
+    await downloadAudio(audioFastUrl, audioFastPath);
   }
 }

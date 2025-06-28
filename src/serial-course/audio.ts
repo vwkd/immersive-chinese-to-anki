@@ -1,8 +1,6 @@
 import { getLogger } from "@logtape/logtape";
 import { join } from "@std/path/join";
-import { exists } from "@std/fs/exists";
-import { delay } from "@std/async/delay";
-import { downloadFile } from "../utilities.ts";
+import { downloadAudio } from "../audio.ts";
 import { COLUMNS_INPUT } from "./main.ts";
 import {
   getFastAudioFileName,
@@ -10,8 +8,6 @@ import {
   getSlowAudioFileName,
 } from "./utils.ts";
 import type { Table } from "../types.ts";
-
-const DOWNLOAD_DELAY = 1000;
 
 const log = getLogger(["ic-to-anki", "serial-course", "audio"]);
 
@@ -23,11 +19,7 @@ export async function downloadAudios(
   parsed: Table<typeof COLUMNS_INPUT>,
   dir: string,
 ): Promise<void> {
-  log.info(
-    `Downloading audios into ${dir}... with ${
-      DOWNLOAD_DELAY / 1000
-    } seconds delay`,
-  );
+  log.info(`Downloading audios into ${dir}`);
 
   await Deno.mkdir(dir, { recursive: true });
 
@@ -35,37 +27,20 @@ export async function downloadAudios(
     const { audioFastUrl, audioSlowUrl, audioFastMaleId, identifier } of parsed
   ) {
     log.info(`Downloading audio for ${identifier}...`);
-    let timeout: Promise<void> | undefined;
 
     const fastAudioPath = join(
       dir,
       getFastAudioFileName(audioFastUrl),
     );
 
-    if (await exists(fastAudioPath)) {
-      log.debug(
-        `Skip downloading fast audio because already exists.`,
-      );
-    } else {
-      log.debug(`Downloading fast audio.`);
-      timeout = delay(DOWNLOAD_DELAY);
-      await downloadFile(audioFastUrl, fastAudioPath);
-    }
+    await downloadAudio(audioFastUrl, fastAudioPath);
 
     const fastMaleAudioPath = join(dir, getFastMaleAudioFileName(audioFastUrl));
 
     const audioMaleUrl =
       `https://www.immersivechinese.com/male/${audioFastMaleId}.mp4`;
 
-    if (await exists(fastMaleAudioPath)) {
-      log.debug(
-        `Skip downloading fast male audio because already exists.`,
-      );
-    } else {
-      log.debug(`Downloading fast male audio.`);
-      if (!timeout) timeout = delay(DOWNLOAD_DELAY);
-      await downloadFile(audioMaleUrl, fastMaleAudioPath);
-    }
+    await downloadAudio(audioMaleUrl, fastMaleAudioPath);
 
     if (audioSlowUrl != audioFastUrl) {
       const slowAudioPath = join(
@@ -73,17 +48,7 @@ export async function downloadAudios(
         getSlowAudioFileName(audioSlowUrl),
       );
 
-      if (await exists(slowAudioPath)) {
-        log.debug(
-          `Skip downloading slow audio because already exists.`,
-        );
-      } else {
-        log.debug(`Downloading slow audio.`);
-        if (!timeout) timeout = delay(DOWNLOAD_DELAY);
-        await downloadFile(audioSlowUrl, slowAudioPath);
-      }
+      await downloadAudio(audioSlowUrl, slowAudioPath);
     }
-
-    await timeout;
   }
 }
