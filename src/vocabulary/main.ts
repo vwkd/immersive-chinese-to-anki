@@ -24,6 +24,11 @@ export const COLUMNS_OUTPUT = [
   "audio",
 ] as const;
 
+/**
+ * Create vocabulary deck and download audio
+ *
+ * @param options command line options
+ */
 async function createVocabulary({ data, out, audio }: Options): Promise<void> {
   if (!data) {
     throw new Error("No source file specified");

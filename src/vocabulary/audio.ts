@@ -9,7 +9,9 @@ const log = getLogger(["ic-to-anki", "vocabulary", "audio"]);
 
 /**
  * Download audio files
- * Skips files that already exist
+ *
+ * @param parsed data from CSV
+ * @param dir directory to download audio files to
  */
 export async function downloadAudios(
   parsed: Table<typeof COLUMNS_INPUT>,

@@ -11,9 +11,12 @@ const log = getLogger(["ic-to-anki", "serial-course", "process"]);
 
 /**
  * Process lessons
- * Returns object with lessons as values, lesson is object with name and array of exercises
- * Note, slow audio is duplicate of fast if not available
- * Note, lessons can have more or less than 25 exercises
+ *
+ * - note: slow audio is duplicate of fast if not available
+ * - note: lessons can have more or less than 25 exercises
+ *
+ * @param parsed data from CSV
+ * @returns lesson decks
  */
 export function processLessons(
   parsed: Table<typeof COLUMNS_INPUT>,

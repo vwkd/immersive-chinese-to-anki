@@ -7,9 +7,10 @@ import type { Decks } from "../types.ts";
 const log = getLogger(["ic-to-anki", "serial-course", "csv"]);
 
 /**
- * Write processed lessons to CSV
- * Skips files that already exist
- * Note, doesn't use header since Anki can't skip it
+ * Write lessons to CSV
+ *
+ * @param lessons lesson decks
+ * @param dir directory to write CSVs to
  */
 export async function writeLessons(
   lessons: Decks<typeof COLUMNS_OUTPUT>,

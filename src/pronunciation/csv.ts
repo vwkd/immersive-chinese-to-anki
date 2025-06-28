@@ -7,9 +7,10 @@ import type { Decks } from "../types.ts";
 const log = getLogger(["ic-to-anki", "pronunciation", "csv"]);
 
 /**
- * Write processed pronunciations to CSV
- * Skips files that already exist
- * Note, doesn't use header since Anki can't skip it
+ * Write pronunciations to CSV
+ *
+ * @param pronunciations pronunciation decks
+ * @param dir directory to write CSVs to
  */
 export async function writePronunciations(
   pronunciations: Decks<typeof COLUMNS_OUTPUT>,
