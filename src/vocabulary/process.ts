@@ -20,12 +20,15 @@ export function processVocabulary(
     (
       {
         identifier,
+        lesson,
         simplified,
         traditional,
         pinyin,
         translation,
       },
     ) => ({
+      noteType: "IC Vocabulary",
+      deck: `IC::Vocabulary::Lesson ${lesson}`,
       identifier: identifier.trim(),
       simplified: simplified.trim(),
       traditional: traditional.trim(),

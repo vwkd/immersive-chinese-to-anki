@@ -4,7 +4,7 @@
 
 ## Introduction
 
-- copy of Note Type `Basic`
+- clone of Note Type `Basic` with name `IC Vocabulary`
 - fields: ID, Simplified, Traditional, Pinyin, English, Audio
 - note, use together with Deck Option that disables automatic audio play
 

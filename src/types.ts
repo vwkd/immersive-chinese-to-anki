@@ -7,7 +7,7 @@ export interface Options {
    */
   data: string;
   /**
-   * Path to CSV target directory
+   * Path to CSV target file
    */
   out: string;
   /**

@@ -35,20 +35,18 @@ Run the CLI app on the CSVs.
 Provide the optional audio target directory argument to also download audio.
 
 ```sh
-deno task run serial-course -d serial-course.csv -o out/serial-course -a out/serial-course/audio
-deno task run vocabulary -d vocabulary.csv -o out/vocabulary -a out/vocabulary/audio
-deno task run pronunciation -d pronunciation.csv -o out/pronunciation -a out/pronunciation/audio
+deno task run serial-course -d serial-course.csv -o out/serial-course.csv -a out/serial-course/audio
+deno task run vocabulary -d vocabulary.csv -o out/vocabulary.csv -a out/vocabulary/audio
+deno task run pronunciation -d pronunciation.csv -o out/pronunciation.csv -a out/pronunciation/audio
 ```
 
 Note: Files that already exist are not overwritten. Audio files that already exist aren't downloaded again.
 
 ### 3. Import data into Anki
 
-Import CSV files into Anki and move the audio files into Anki's media directory. Make sure to select the right Card Type, the right Deck, and confirm that the Field Mapping is correct. This will be the most laborious task for multiple CSV files.
+Create new Card Types `IC Serial Course`, `IC Vocabulary`, `IC Pronunciation` for each type of content. See [card-templates](card-templates) for an example that looks like Immersive Chinese and plays the fast audio on the front. Use it together with a new Deck Option that disables automatic audio playing. You can apply the Deck Option to all subdecks as well.
 
-You can create subdecks for each type of content and lesson, e.g. `IC::Serial Course::Chapter 1::Lesson 1`, `IC::Pronunciation::Lesson 1`, etc.
-
-You can create a new Card Type for each type of content (Serial Course, Vocabulary, Pronunciation). See [card-templates](card-templates) for an example that looks like Immersive Chinese and plays the fast audio on the front. Use it together with a new Deck Option that disables automatic audio playing. You can apply the Deck Option to all subdecks as well.
+Import the CSV files into Anki and move the audio files into Anki's media directory. Make sure to confirm that the Field Mapping is correct.
 
 Note, Anki falsely reports unused Media if the audio field contains only the filepath and the `[sound: ..]` directive is in the Card Template.
 

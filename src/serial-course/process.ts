@@ -58,7 +58,7 @@ export function processLessons(
 
       // get name without pinyin words
       const regex = /^(.+)\n/;
-      const name = `Chapter ${chapter} ${lesson.trim().match(regex)[1]}`;
+      const name = lesson.trim().match(regex)[1];
 
       const audioFast = getFastAudioFileName(audioFastUrl);
       const audioFastMale = getFastMaleAudioFileName(audioFastUrl);
@@ -75,6 +75,8 @@ export function processLessons(
       }
 
       const exercise: Note<typeof COLUMNS_OUTPUT> = {
+        noteType: "IC Serial Course",
+        deck: `IC::Serial Course::Chapter ${chapter}::${name}`,
         identifier: identifier.trim(),
         pinyin: pinyin.trim(),
         simplified: simplified.trim(),

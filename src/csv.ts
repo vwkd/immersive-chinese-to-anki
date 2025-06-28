@@ -48,10 +48,27 @@ export async function writeCsv<
 ): Promise<void> {
   log.info(`Writing CSV to '${path}'...`);
 
+  const noteType = columns.indexOf("noteType");
+
+  if (noteType === -1) {
+    throw new Error("Missing column 'noteType'");
+  }
+
+  const deck = columns.indexOf("deck");
+
+  if (deck === -1) {
+    throw new Error("Missing column 'deck'");
+  }
+
   const csvString = stringifyCsv(data, {
     columns,
     headers: false,
   });
+
+  const csv = `#separator:Comma
+#notetype column:${noteType + 1}
+#deck column:${deck + 1}
+${csvString}`;
 
   if (await exists(path)) {
     log.debug(`Skip writing data because already exists.`);
@@ -60,6 +77,6 @@ export async function writeCsv<
   } else {
     log.debug(`Write data.`);
 
-    return Deno.writeTextFile(path, csvString);
+    return Deno.writeTextFile(path, csv);
   }
 }
