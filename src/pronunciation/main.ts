@@ -17,6 +17,8 @@ export const COLUMNS_INPUT = [
   "identifier",
 ] as const;
 export const COLUMNS_OUTPUT = [
+  "noteType",
+  "deck",
   "identifier",
   "pinyin",
   "description",
@@ -55,6 +57,6 @@ async function createPronunciations(
 export default new Command()
   .description("Create pronunciations")
   .option("-d, --data <path:file>", "CSV source file", { required: true })
-  .option("-o, --out <path:file>", "CSV target directory", { required: true })
+  .option("-o, --out <path:file>", "CSV target file", { required: true })
   .option("-a, --audio <path:file>", "Audio target directory")
   .action(createPronunciations);

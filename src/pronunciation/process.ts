@@ -56,6 +56,8 @@ export function processPronunciations(
       }
 
       const exercise: Note<typeof COLUMNS_OUTPUT> = {
+        noteType: "IC Pronunciation",
+        deck: `IC::Pronunciation::${name}`,
         identifier,
         pinyin: pinyin.trim(),
         description: description.trim(),

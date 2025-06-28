@@ -21,6 +21,8 @@ export const COLUMNS_INPUT = [
   "identifier",
 ] as const;
 export const COLUMNS_OUTPUT = [
+  "noteType",
+  "deck",
   "identifier",
   "simplified",
   "traditional",
@@ -66,7 +68,7 @@ export default new Command()
   })
   .option(
     "-o, --out <path:file>",
-    "CSV target directory",
+    "CSV target file",
     { required: true },
   )
   .option("-a, --audio <path:file>", "Audio target directory")
