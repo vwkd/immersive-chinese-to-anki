@@ -1,8 +1,7 @@
 import { getLogger } from "@logtape/logtape";
-import { COLUMNS_INPUT } from "./main.ts";
+import { COLUMNS_INPUT, COLUMNS_OUTPUT } from "./main.ts";
 import { getAudioFileName } from "./utils.ts";
-import type { Table } from "../types.ts";
-import type { Exercise, Pronunciation, Pronunciations } from "./types.ts";
+import type { Deck, Decks, Note, Table } from "../types.ts";
 
 const log = getLogger(["ic-to-anki", "pronunciation", "process"]);
 
@@ -13,10 +12,10 @@ const log = getLogger(["ic-to-anki", "pronunciation", "process"]);
  */
 export function processPronunciations(
   parsed: Table<typeof COLUMNS_INPUT>,
-): Pronunciations {
+): Decks<typeof COLUMNS_OUTPUT> {
   log.info(`Processing pronunciations...`);
 
-  const pronunciations: Pronunciations = {};
+  const pronunciations: Decks<typeof COLUMNS_OUTPUT> = {};
 
   parsed.forEach(
     (
@@ -53,7 +52,7 @@ export function processPronunciations(
         description = "";
       }
 
-      const exercise: Exercise = {
+      const exercise: Note<typeof COLUMNS_OUTPUT> = {
         identifier,
         pinyin: pinyin.trim(),
         description: description.trim(),
@@ -62,11 +61,11 @@ export function processPronunciations(
 
       // create pronunciation on first encounter
       if (pronunciations[name] === undefined) {
-        pronunciations[name] = {} as Pronunciation;
-        pronunciations[name].exercises = [];
+        pronunciations[name] = {} as Deck<typeof COLUMNS_OUTPUT>;
+        pronunciations[name].notes = [];
       }
       pronunciations[name].name = name;
-      pronunciations[name].exercises.push(exercise);
+      pronunciations[name].notes.push(exercise);
     },
   );
 

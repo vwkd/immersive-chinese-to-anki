@@ -1,8 +1,7 @@
 import { getLogger } from "@logtape/logtape";
-import { COLUMNS_INPUT } from "./main.ts";
+import { COLUMNS_INPUT, COLUMNS_OUTPUT } from "./main.ts";
 import { getAudioFileName } from "./utils.ts";
-import { Table } from "../types.ts";
-import type { Vocabulary } from "./types.ts";
+import { Note, Table } from "../types.ts";
 
 const log = getLogger(["ic-to-anki", "vocabulary", "process"]);
 
@@ -12,7 +11,7 @@ const log = getLogger(["ic-to-anki", "vocabulary", "process"]);
  */
 export function processVocabulary(
   parsed: Table<typeof COLUMNS_INPUT>,
-): Vocabulary {
+): Note<typeof COLUMNS_OUTPUT>[] {
   log.info(`Processing vocabulary...`);
 
   return parsed.map(
@@ -31,6 +30,6 @@ export function processVocabulary(
       pinyin: pinyin.trim(),
       translation: translation.trim(),
       audio: getAudioFileName(identifier),
-    }),
+    } satisfies Note<typeof COLUMNS_OUTPUT>),
   );
 }

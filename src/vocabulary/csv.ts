@@ -2,7 +2,7 @@ import { getLogger } from "@logtape/logtape";
 import { join } from "@std/path/join";
 import { writeCsv } from "../csv.ts";
 import { COLUMNS_OUTPUT } from "./main.ts";
-import type { Vocabulary } from "./types.ts";
+import { Note } from "../types.ts";
 
 const log = getLogger(["ic-to-anki", "vocabulary", "csv"]);
 
@@ -12,7 +12,7 @@ const log = getLogger(["ic-to-anki", "vocabulary", "csv"]);
  * Note, doesn't use header since Anki can't skip it
  */
 export async function writeVocabulary(
-  vocabulary: Vocabulary,
+  vocabulary: Note<typeof COLUMNS_OUTPUT>[],
   dir: string,
 ): Promise<void> {
   log.info(`Writing vocabulary to '${dir}'...`);
