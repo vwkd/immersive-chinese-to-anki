@@ -1,6 +1,8 @@
 import { getLogger } from "@logtape/logtape";
+import { COLUMNS_INPUT } from "./main.ts";
 import { getAudioFileName } from "./utils.ts";
-import type { Data, Exercise, Pronunciation, Pronunciations } from "./types.ts";
+import type { Table } from "../types.ts";
+import type { Exercise, Pronunciation, Pronunciations } from "./types.ts";
 
 const log = getLogger(["ic-to-anki", "pronunciation", "process"]);
 
@@ -9,7 +11,9 @@ const log = getLogger(["ic-to-anki", "pronunciation", "process"]);
  * Returns object with pronunciations as values, pronunciation is object with name and array of exercises
  * Note, discard slow audio since duplicate of fast
  */
-export function processPronunciations(parsed: Data): Pronunciations {
+export function processPronunciations(
+  parsed: Table<typeof COLUMNS_INPUT>,
+): Pronunciations {
   log.info(`Processing pronunciations...`);
 
   const pronunciations: Pronunciations = {};

@@ -1,6 +1,7 @@
 import { Command } from "@cliffy/command";
-import { loadPronunciations, writePronunciations } from "./csv.ts";
+import { loadCsv } from "../csv.ts";
 import { processPronunciations } from "./process.ts";
+import { writePronunciations } from "./csv.ts";
 import { downloadAudios } from "./audio.ts";
 import type { Options } from "../types.ts";
 
@@ -37,7 +38,7 @@ async function createPronunciations(
     throw new Error("No target directory specified");
   }
 
-  const parsed = await loadPronunciations(data);
+  const parsed = await loadCsv(data, COLUMNS_INPUT);
 
   const lessons = processPronunciations(parsed);
 

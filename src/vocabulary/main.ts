@@ -1,5 +1,6 @@
 import { Command } from "@cliffy/command";
-import { loadVocabulary, writeVocabulary } from "./csv.ts";
+import { loadCsv } from "../csv.ts";
+import { writeVocabulary } from "./csv.ts";
 import { processVocabulary } from "./process.ts";
 import { downloadAudios } from "./audio.ts";
 import type { Options } from "../types.ts";
@@ -32,7 +33,7 @@ async function createVocabulary({ data, out, audio }: Options): Promise<void> {
     throw new Error("No target directory specified");
   }
 
-  const parsed = await loadVocabulary(data);
+  const parsed = await loadCsv(data, COLUMNS_INPUT);
 
   const vocabulary = processVocabulary(parsed);
 

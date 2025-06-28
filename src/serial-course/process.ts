@@ -1,10 +1,12 @@
 import { getLogger } from "@logtape/logtape";
+import { COLUMNS_INPUT } from "./main.ts";
 import {
   getFastAudioFileName,
   getFastMaleAudioFileName,
   getSlowAudioFileName,
 } from "./utils.ts";
-import type { Data, Exercise, Lesson, Lessons } from "./types.ts";
+import { Table } from "../types.ts";
+import type { Exercise, Lesson, Lessons } from "./types.ts";
 
 const log = getLogger(["ic-to-anki", "serial-course", "process"]);
 
@@ -14,7 +16,7 @@ const log = getLogger(["ic-to-anki", "serial-course", "process"]);
  * Note, slow audio is duplicate of fast if not available
  * Note, lessons can have more or less than 25 exercises
  */
-export function processLessons(parsed: Data): Lessons {
+export function processLessons(parsed: Table<typeof COLUMNS_INPUT>): Lessons {
   log.info(`Processing lessons...`);
 
   const lessons: Lessons = {};
